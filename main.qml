@@ -60,7 +60,7 @@ Rectangle {
                 listModel.append({
                     "id":1,
                     "name":"手机",
-                    "rtmp_url":"rtmp://172.24.2.215:50051/hls/abc"
+                    "rtmp_url":"rtmp://192.168.43.59:50051/hls/test"
                 })
             }
         }
@@ -103,6 +103,7 @@ Rectangle {
         VideoCtrl {
             id: videoCtrl
         }
+
     }
 
 }

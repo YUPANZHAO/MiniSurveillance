@@ -15,6 +15,16 @@ enum NALU_TYPE {
     NALU_TYPE_OTHER
 };
 
+enum AUDIO_TYPE {
+    AUDIO_INFO,
+    AUDIO_DATA
+};
+
+enum AUDIO_CHANNEL_TYPE {
+    AUDIO_CHANNEL_MONO,
+    AUDIO_CHANNEL_STEREO
+};
+
 } // namespace ZYP
 
 #endif // _TYPES_H_

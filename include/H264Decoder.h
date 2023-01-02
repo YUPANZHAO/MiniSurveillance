@@ -4,15 +4,12 @@
 #include "debug.h"
 #include "types.h"
 #include <functional>
-
-extern "C" {
-    #include <libavcodec/avcodec.h>
-}
+#include "FFmpeg_Decoder.h"
 
 using namespace std;
 using namespace ZYP;
 
-class H264Decoder {
+class H264Decoder : public FFmpeg_Decoder {
 
     // data len width height pix_fmt
     using FrameCallBack = function<void(BYTE*,UINT32,UINT32,UINT32,AVPixelFormat)>;
@@ -25,17 +22,12 @@ public:
 
 public:
     void setFrameCallBack(FrameCallBack cb);
-    void receiveOneNalu(NALU_TYPE type, BYTE* data, UINT32 len);
+
+private:
+    void handleOneFrame(AVFrame* frame);
 
 private:
     FrameCallBack frameCallBack;
-
-    AVCodec* codec = nullptr;
-    AVCodecParserContext* codec_parser_ctx = nullptr;
-    AVCodecContext* codec_ctx = nullptr;
-    AVFrame* frame = nullptr;
-    AVPacket* packet = nullptr;
-
     BYTE* buf;
 
 };

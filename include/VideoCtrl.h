@@ -8,6 +8,9 @@
 #include "H264Decoder.h"
 #include <QVideoFrame>
 #include "FrameProvider.h"
+#include "AACDecoder.h"
+#include <QAudioFormat>
+#include <QAudioOutput>
 
 using namespace ZYP;
 using namespace std;
@@ -33,11 +36,17 @@ signals:
 
 private:
     unique_ptr<VideoCapture> videoCapture;
-    unique_ptr<H264Decoder> decoder;
+    unique_ptr<H264Decoder> video_decoder;
     unique_ptr<FrameProvider> provider;
     unique_ptr<QVideoFrame> frame;
+    unique_ptr<AACDecoder> audio_decoder;
 
     bool is_playing;
+
+    BYTE adts_header[7];
+    QAudioFormat audioFormat;
+    QAudioOutput* audio;
+    QIODevice* audio_io;
 
 private:
     auto convertFormat(AVPixelFormat pix_fmt) -> QVideoFrame::PixelFormat;

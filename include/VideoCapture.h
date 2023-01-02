@@ -15,6 +15,7 @@ using namespace ZYP;
 class VideoCapture {
 
     using NaluCallBack = function<void(NALU_TYPE,BYTE*,UINT32)>;
+    using AudioCallBack = function<void(AUDIO_TYPE,AUDIO_CHANNEL_TYPE,BYTE*,UINT32)>;
 
 public:
     VideoCapture();
@@ -22,6 +23,7 @@ public:
 
 public:
     void setNaluCB(NaluCallBack cb);
+    void setAudioCB(AudioCallBack cb);
     void setRtmpURL(const string & url);
     bool start();
     void stop();
@@ -35,7 +37,11 @@ private:
     void handle_sps_pps_packet(RTMPPacket* packet);
     void handle_nalu_frame_packet(RTMPPacket* packet);
 
+    void handle_audio_decode_info_packet(RTMPPacket* packet);
+    void handle_audio_data_packet(RTMPPacket* packet);
+
     NaluCallBack naluCallBack;
+    AudioCallBack audioCallBack;
     string rtmp_url;
     shared_ptr<thread> p_rtmp_pull_thread;
     bool is_pulling;

@@ -8,6 +8,8 @@ DEFINES += _DEBUG
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        AACDecoder.cpp \
+        FFmpeg_Decoder.cpp \
         FrameProvider.cpp \
         H264Decoder.cpp \
         VideoCtrl.cpp \
@@ -38,15 +40,22 @@ LIBS += $$PWD/libs/librtmp.a \
         -L$$PWD/libs/ffmpeg/ -lpostproc \
         -L$$PWD/libs/ffmpeg/ -lswresample \
         -L$$PWD/libs/ffmpeg/ -lswscale \
+        $$PWD/libs/libfaac.a
 
 
 LIBS += -lws2_32 -lwinmm
 HEADERS += \
+    include/AACDecoder.h \
+    include/FFmpeg_Decoder.h \
     include/FrameProvider.h \
     include/H264Decoder.h \
     include/VideoCapture.h \
     include/VideoCtrl.h \
     include/debug.h \
+    include/faac/faac.h \
+    include/faac/faaccfg.h \
+    include/faad/faad.h \
+    include/faad/neaacdec.h \
     include/libavcodec/ac3_parser.h \
     include/libavcodec/adts_parser.h \
     include/libavcodec/avcodec.h \
