@@ -9,10 +9,13 @@ DEFINES += _DEBUG
 
 SOURCES += \
         AACDecoder.cpp \
+        CameraFilter.cpp \
         FFmpeg_Decoder.cpp \
         FrameProvider.cpp \
         H264Decoder.cpp \
+        VideoChannel.cpp \
         VideoCtrl.cpp \
+        VideoSender.cpp \
         main.cpp \
         VideoCapture.cpp
 
@@ -40,17 +43,22 @@ LIBS += $$PWD/libs/librtmp.a \
         -L$$PWD/libs/ffmpeg/ -lpostproc \
         -L$$PWD/libs/ffmpeg/ -lswresample \
         -L$$PWD/libs/ffmpeg/ -lswscale \
-        $$PWD/libs/libfaac.a
+        $$PWD/libs/libfaac.a \
+        $$PWD/libs/libx264.a
 
 
 LIBS += -lws2_32 -lwinmm
 HEADERS += \
     include/AACDecoder.h \
+    include/CameraFilter.h \
     include/FFmpeg_Decoder.h \
     include/FrameProvider.h \
     include/H264Decoder.h \
+    include/SafeQueue.hpp \
     include/VideoCapture.h \
+    include/VideoChannel.h \
     include/VideoCtrl.h \
+    include/VideoSender.h \
     include/debug.h \
     include/faac/faac.h \
     include/faac/faaccfg.h \
@@ -199,4 +207,6 @@ HEADERS += \
     include/libswscale/swscale.h \
     include/libswscale/version.h \
     include/libswscale/version_major.h \
-    include/types.h
+    include/types.h \
+    include/x264/x264.h \
+    include/x264/x264_config.h

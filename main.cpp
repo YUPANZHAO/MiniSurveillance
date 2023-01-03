@@ -3,15 +3,25 @@
 #include "librtmp/rtmp.h"
 #include "debug.h"
 #include "VideoCtrl.h"
+#include "CameraFilter.h"
+#include "VideoSender.h"
 
 int main(int argc, char *argv[])
 {
+    // 初始化网络环境
+    WORD version;
+    WSADATA wsaData;
+    version = MAKEWORD(1, 1);
+    WSAStartup(version, &wsaData);
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<VideoCtrl>("VideoCtrl", 1, 0, "VideoCtrl");
+    qmlRegisterType<CameraFilter>("CameraFilter", 1, 0, "CameraFilter");
+    qmlRegisterType<VideoSender>("VideoSender", 1, 0, "VideoSender");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
@@ -21,12 +31,6 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
-
-    // 初始化网络环境
-    WORD version;
-    WSADATA wsaData;
-    version = MAKEWORD(1, 1);
-    WSAStartup(version, &wsaData);
 
     int ret = app.exec();
 

@@ -84,8 +84,7 @@ bool VideoCapture::init() {
 
 void VideoCapture::unInit() {
     if(rtmp) {
-//        Windows下会奔溃退出，Linux下正常运行
-//        RTMP_Close(rtmp);
+        RTMP_Close(rtmp);
         RTMP_Free(rtmp);
         rtmp = nullptr;
     }

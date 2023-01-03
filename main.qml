@@ -5,17 +5,19 @@ import QtQuick.Controls 1.4
 import VideoCtrl 1.0
 import QtQuick.Controls.Styles 1.4
 import QtQml.Models 2.15
+import CameraFilter 1.0
+import VideoSender 1.0
 
 Window {
     width: 790
-    height: 360
+    height: 720
     visible: true
     title: qsTr("Mini Surveillance")
 
 Rectangle {
     id: mainWindow
     width: parent.width
-    height: parent.height
+    height: parent.height / 2
 
     // 设备列表单击事件
     function onListItemClicked(item) {
@@ -60,7 +62,7 @@ Rectangle {
                 listModel.append({
                     "id":1,
                     "name":"手机",
-                    "rtmp_url":"rtmp://192.168.43.59:50051/hls/test"
+                    "rtmp_url":"rtmp://172.24.0.119:50051/hls/test"
                 })
             }
         }
@@ -83,8 +85,8 @@ Rectangle {
     // 监控画面
     Rectangle {
         id: surface
-        width: mainWindow.width - list.width;
-        height: surface.width * 9 / 16
+        width: parent.width - list.width;
+        height: parent.height
         anchors.left: list.right
         anchors.top: mainWindow.top
         anchors.topMargin: (mainWindow.height - surface.height) / 2
@@ -95,15 +97,73 @@ Rectangle {
 
         VideoOutput {
             id: videoOutput
-            width: parent.width
-            height: parent.height
+            anchors.fill: parent
             source: videoCtrl.frameProvider
         }
 
         VideoCtrl {
             id: videoCtrl
         }
+    }
 
+}
+
+Rectangle {
+    id: myCamera
+    width: parent.width
+    height: parent.height / 2
+    anchors.top: mainWindow.bottom
+
+    Camera {
+        id: camera
+    }
+
+    CameraFilter {
+        id: filter
+        qmlCamera: camera
+    }
+
+    Rectangle {
+        id: surface2
+        width: parent.width - list.width
+        height: parent.height
+        anchors.left: parent.left
+        anchors.leftMargin: list.width
+        color: "black"
+
+        VideoOutput {
+            id: videoOutput2
+            anchors.fill: parent
+            source: camera
+        }
+
+    }
+
+    Button {
+        id: btn_push
+        width: list.width
+        height: 50
+        text: "Push"
+        onClicked: {
+            sender.setRtmpUrl("rtmp://172.24.0.119:50051/hls/test")
+            sender.push();
+        }
+    }
+
+    Button {
+        id: btn_stop
+        width: list.width
+        height: 50
+        text: "Stop"
+        anchors.top: btn_push.bottom
+        onClicked: {
+            sender.stop()
+        }
+    }
+
+    VideoSender {
+        id: sender
+        cameraSource: filter
     }
 
 }
