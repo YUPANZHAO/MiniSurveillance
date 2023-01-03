@@ -9,6 +9,7 @@ DEFINES += _DEBUG
 
 SOURCES += \
         AACDecoder.cpp \
+        AudioChannel.cpp \
         CameraFilter.cpp \
         FFmpeg_Decoder.cpp \
         FrameProvider.cpp \
@@ -50,6 +51,7 @@ LIBS += $$PWD/libs/librtmp.a \
 LIBS += -lws2_32 -lwinmm
 HEADERS += \
     include/AACDecoder.h \
+    include/AudioChannel.h \
     include/CameraFilter.h \
     include/FFmpeg_Decoder.h \
     include/FrameProvider.h \

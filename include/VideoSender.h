@@ -5,10 +5,13 @@
 #include <QVideoFrame>
 #include "CameraFilter.h"
 #include "VideoChannel.h"
+#include "AudioChannel.h"
 #include <thread>
 #include <memory>
 #include "librtmp/rtmp.h"
 #include "SafeQueue.hpp"
+#include <QAudioFormat>
+#include <QAudioInput>
 
 using namespace std;
 
@@ -32,6 +35,9 @@ public:
     Q_INVOKABLE void push();
     Q_INVOKABLE void stop();
 
+    Q_INVOKABLE void openAudio();
+    Q_INVOKABLE void stopAudio();
+
 private:
     CameraFilter* source;
 
@@ -41,7 +47,13 @@ private:
     shared_ptr<VideoChannel> videoChannel;
     bool is_pushing;
     string rtmp_push_url;
+    function<void(RTMPPacket*)> RTMPPacketCallBack;
 
+    shared_ptr<AudioChannel> audioChannel;
+    shared_ptr<QAudioInput> audioInput;
+    QIODevice* audio_io;
+    shared_ptr<std::thread> audio_data_thread;
+    bool is_pushing_audio;
 };
 
 #endif // VIDEOSENDER_H

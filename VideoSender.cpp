@@ -3,7 +3,16 @@
 VideoSender::VideoSender()
 : rtmp_push_thread(nullptr)
 , videoChannel(nullptr)
-, is_pushing(false) {
+, audioChannel(nullptr)
+, is_pushing(false)
+, is_pushing_audio(false) {
+    RTMPPacketCallBack = [&](RTMPPacket *packet) {
+        if(packet) {
+            packet->m_nTimeStamp = RTMP_GetTime() - push_start_time;
+            packets.push(packet);
+            // cout << "队列增加一个 packet time_stamp: " << packet->m_nTimeStamp <<  endl;
+        }
+    };
     packets.setReleaseHandle([](RTMPPacket * & packet) {
         if(packet) {
             delete packet;
@@ -11,13 +20,7 @@ VideoSender::VideoSender()
         }
     });
     videoChannel = make_shared<VideoChannel>();
-    videoChannel->setRTMPPacketCallBack([&](RTMPPacket *packet) {
-        if(packet) {
-            packet->m_nTimeStamp = RTMP_GetTime() - push_start_time;
-            packets.push(packet);
-            // cout << "队列增加一个 packet time_stamp: " << packet->m_nTimeStamp <<  endl;
-        }
-    });
+    videoChannel->setRTMPPacketCallBack(RTMPPacketCallBack);
     videoChannel->setVideoEncoderParams(640, 360, 15, 4000000);
 }
 
@@ -118,7 +121,6 @@ void VideoSender::push() {
 
         if(rtmp) {
             RTMP_Close(rtmp);
-            qDebug() << "RTMP_Close End";
             RTMP_Free(rtmp);
         }
 
@@ -138,9 +140,78 @@ void VideoSender::push() {
 
 void VideoSender::stop() {
     if(!is_pushing) return;
+    if(is_pushing_audio) {
+        stopAudio();
+    }
     is_pushing = false;
     packets.setWork(0);
     packets.clear();
     rtmp_push_thread->join();
     rtmp_push_thread = nullptr;
+}
+
+void VideoSender::openAudio() {
+    if(!is_pushing) return;
+
+    int sampleRateInHz = 44100;
+    int channels = 2;
+    int bits = 16;
+    audioChannel = make_shared<AudioChannel>();
+    audioChannel->setRTMPPacketCallBack(RTMPPacketCallBack);
+    audioChannel->setAudioEncodeParams(sampleRateInHz, channels);
+    RTMPPacketCallBack(audioChannel->getAudioDecodeInfo());
+
+    QAudioFormat fmt;
+    fmt.setSampleRate(sampleRateInHz);
+    fmt.setChannelCount(channels);
+    fmt.setSampleSize(bits);
+    fmt.setCodec("audio/pcm");
+    fmt.setByteOrder(QAudioFormat::LittleEndian);
+    fmt.setSampleType(QAudioFormat::SignedInt);
+
+    audioInput = make_shared<QAudioInput>(fmt);
+    audio_io = audioInput->start();
+
+    is_pushing_audio = true;
+
+    audio_data_thread = make_shared<std::thread>([&, sampleRateInHz, channels, bits]() {
+        int len = audioChannel->getInputSamples() * (bits >> 3);
+        char* buf = new char [len];
+        int ready = 0;
+        while(true) {
+            if(!is_pushing_audio) break;
+            if(audio_io) {
+                ready += audio_io->read(buf + ready, len - ready);
+            }
+            if(ready < len) {
+                Sleep(2);
+                continue;
+            }
+            if(audioChannel) {
+                audioChannel->encodeAudioData((BYTE*)buf);
+            }
+            ready = 0;
+        }
+        delete [] buf;
+        is_pushing_audio = false;
+    });
+
+    qDebug() << "开启音频推流";
+}
+
+void VideoSender::stopAudio() {
+    if(!is_pushing_audio) return;
+    is_pushing_audio = false;
+    if(audio_data_thread) {
+        audio_data_thread->join();
+        audio_data_thread = nullptr;
+    }
+    audioChannel = nullptr;
+    if(audioInput) {
+        audio_io->close();
+        audio_io = nullptr;
+        audioInput->stop();
+        audioInput = nullptr;
+    }
+    qDebug() << "关闭音频推流";
 }

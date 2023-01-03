@@ -25,13 +25,13 @@ VideoCtrl::VideoCtrl()
     });
     // 获取音频数据
     videoCapture->setAudioCB([this](AUDIO_TYPE type, AUDIO_CHANNEL_TYPE channelCfg, BYTE* data, UINT32 len) {
-        debug("audio data, type:", type, "channelCfg:", channelCfg, "len:", len);
+//        debug("audio data, type:", type, "channelCfg:", channelCfg, "len:", len);
         if(type == AUDIO_INFO) {
             UINT32 num0 = data[0] & 0x7;
             UINT32 num1 = data[1] & 0x80;
             UINT32 sampleIdx = ((num0 << 1) | (num1 >> 7));
             UINT32 channelsIdx = ((data[1] & 0x78) >> 3);
-            debug("get one audio info, sampleIdx:", sampleIdx, "channelsIdx:", channelsIdx);
+//            debug("get one audio info, sampleIdx:", sampleIdx, "channelsIdx:", channelsIdx);
             BYTE temp [] = { 0xFF, 0xF1, 0x40, 0x00, 0x00, 0x1F, 0xFC };
             temp[2] |= (sampleIdx << 2) & 0x3C;
             temp[2] |= ((channelsIdx & 0x4) >> 2) & 0x1;
@@ -74,7 +74,7 @@ VideoCtrl::VideoCtrl()
     });
     // AAC 解码，获取 PCM 数据
     audio_decoder->setPCMCallBack([this](BYTE* data, UINT32 len) {
-        debug("获取到一帧PCM, len:", len);
+//        debug("获取到一帧PCM, len:", len);
         if(audio)
             audio_io->write((const char*)data, len);
     });

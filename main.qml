@@ -161,6 +161,28 @@ Rectangle {
         }
     }
 
+    Button {
+        id: btn_openAudio
+        width: list.width
+        height: 50
+        text: "OpenAudio"
+        anchors.top: btn_stop.bottom
+        onClicked: {
+            sender.openAudio()
+        }
+    }
+
+    Button {
+        id: btn_stopAudio
+        width: list.width
+        height: 50
+        text: "StopAudio"
+        anchors.top: btn_openAudio.bottom
+        onClicked: {
+            sender.stopAudio()
+        }
+    }
+
     VideoSender {
         id: sender
         cameraSource: filter
