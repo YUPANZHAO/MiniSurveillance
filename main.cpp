@@ -5,7 +5,7 @@
 #include "VideoCtrl.h"
 #include "CameraFilter.h"
 #include "VideoSender.h"
-#include "grpcpp/grpcpp.h"
+#include "MainCtrl.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<VideoCtrl>("VideoCtrl", 1, 0, "VideoCtrl");
     qmlRegisterType<CameraFilter>("CameraFilter", 1, 0, "CameraFilter");
     qmlRegisterType<VideoSender>("VideoSender", 1, 0, "VideoSender");
+    qmlRegisterType<MainCtrl>("MainCtrl", 1, 0, "MainCtrl");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
@@ -32,8 +33,6 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
-
-    debug("grpc version:", grpc_version_string());
 
     int ret = app.exec();
 

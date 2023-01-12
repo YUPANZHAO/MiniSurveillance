@@ -141,7 +141,7 @@ bool VideoCtrl::playBykey(const QString key) {
     auto rpc = make_unique<IPCClient>();
 
     auto [ ctx, ret ] = rpc->call({
-        { "method", "req_live_stream" },
+        { "method", "get_device_info" },
         { "key", key.toStdString() }
     });
     if(!ret) return false;

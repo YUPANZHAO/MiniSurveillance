@@ -18,6 +18,7 @@ SOURCES += \
         IPC.grpc.pb.cc \
         IPC.pb.cc \
         IPCClient.cpp \
+        MainCtrl.cpp \
         VideoChannel.cpp \
         VideoCtrl.cpp \
         VideoSender.cpp \
@@ -111,6 +112,7 @@ HEADERS += \
     include/IPC.grpc.pb.h \
     include/IPC.pb.h \
     include/IPCClient.h \
+    include/MainCtrl.h \
     include/SafeQueue.hpp \
     include/VideoCapture.h \
     include/VideoChannel.h \
@@ -119,8 +121,6 @@ HEADERS += \
     include/debug.h \
     include/faac/faac.h \
     include/faac/faaccfg.h \
-    include/faad/faad.h \
-    include/faad/neaacdec.h \
     include/libavcodec/ac3_parser.h \
     include/libavcodec/adts_parser.h \
     include/libavcodec/avcodec.h \
