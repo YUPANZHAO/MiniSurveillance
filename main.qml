@@ -18,10 +18,36 @@ Window {
 MainCtrl {
     id: mainctrl
     Component.onCompleted: {
-        mainctrl.addWindow(videoCtrl1)
-        mainctrl.addWindow(videoCtrl2)
-        mainctrl.addWindow(videoCtrl3)
-        mainctrl.addWindow(videoCtrl4)
+        videoCtrl1.window_idx = mainctrl.addWindow(videoCtrl1)
+        videoCtrl2.window_idx = mainctrl.addWindow(videoCtrl2)
+        videoCtrl3.window_idx = mainctrl.addWindow(videoCtrl3)
+        videoCtrl4.window_idx = mainctrl.addWindow(videoCtrl4)
+    }
+}
+
+Menu {
+    id: rclick_menu
+    width: 100
+
+    property int window_idx: -1
+
+    MenuItem {
+        id: menu_item_AudioCtrl
+        text: "开启/关闭音频"
+        onClicked: {
+            if(mainctrl.getWindowIsPlayingAudio(rclick_menu.window_idx)) {
+                mainctrl.stopAudio(rclick_menu.window_idx)
+            }else {
+                mainctrl.playAudio(rclick_menu.window_idx)
+            }
+        }
+    }
+    MenuItem {
+        id: menu_item_closeVideo
+        text: "关闭视频"
+        onClicked: {
+            mainctrl.stopVideo(mainctrl.getDeivceIdxByWindowIdx(rclick_menu.window_idx))
+        }
     }
 }
 
@@ -32,11 +58,7 @@ Rectangle {
 
     // 设备列表单击事件
     function onListItemClicked(item) {
-        if(mainctrl.getDeviceIsPlaying(item.id)) {
-            mainctrl.stopVideo(item.id)
-        }else {
-            mainctrl.playVideo(item.id)
-        }
+        mainctrl.playVideo(item.id)
     }
 
     // 设备列表
@@ -140,9 +162,6 @@ Rectangle {
         anchors.top: mainWindow.top
         color: "black"
 
-        property bool is_playing: false
-        property string play_node_id: ""
-
         VideoOutput {
             id: videoOutput1
             anchors.fill: parent
@@ -151,6 +170,25 @@ Rectangle {
 
         VideoCtrl {
             id: videoCtrl1
+            property int window_idx: -1
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: {
+                if(!mainctrl.getDeviceIsPlaying(
+                    mainctrl.getDeivceIdxByWindowIdx(
+                    videoCtrl1.window_idx))) return;
+                rclick_menu.x = mouse.x + parent.x
+                rclick_menu.y = mouse.y + parent.y
+                if(mainctrl.getWindowIsPlayingAudio(videoCtrl1.window_idx))
+                    menu_item_AudioCtrl.text = "关闭音频"
+                else
+                    menu_item_AudioCtrl.text = "开启音频"
+                rclick_menu.window_idx = videoCtrl1.window_idx
+                rclick_menu.open()
+            }
         }
     }
 
@@ -164,9 +202,6 @@ Rectangle {
         anchors.leftMargin: 1
         color: "black"
 
-        property bool is_playing: false
-        property string play_node_id: ""
-
         VideoOutput {
             id: videoOutput2
             anchors.fill: parent
@@ -175,6 +210,25 @@ Rectangle {
 
         VideoCtrl {
             id: videoCtrl2
+            property int window_idx: -1
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: {
+                if(!mainctrl.getDeviceIsPlaying(
+                    mainctrl.getDeivceIdxByWindowIdx(
+                    videoCtrl2.window_idx))) return;
+                rclick_menu.x = mouse.x + parent.x
+                rclick_menu.y = mouse.y + parent.y
+                if(mainctrl.getWindowIsPlayingAudio(videoCtrl2.window_idx))
+                    menu_item_AudioCtrl.text = "关闭音频"
+                else
+                    menu_item_AudioCtrl.text = "开启音频"
+                rclick_menu.window_idx = videoCtrl2.window_idx
+                rclick_menu.open()
+            }
         }
     }
 
@@ -188,9 +242,6 @@ Rectangle {
         anchors.topMargin: 1
         color: "black"
 
-        property bool is_playing: false
-        property string play_node_id: ""
-
         VideoOutput {
             id: videoOutput3
             anchors.fill: parent
@@ -199,6 +250,25 @@ Rectangle {
 
         VideoCtrl {
             id: videoCtrl3
+            property int window_idx: -1
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: {
+                if(!mainctrl.getDeviceIsPlaying(
+                    mainctrl.getDeivceIdxByWindowIdx(
+                    videoCtrl3.window_idx))) return;
+                rclick_menu.x = mouse.x + parent.x
+                rclick_menu.y = mouse.y + parent.y
+                if(mainctrl.getWindowIsPlayingAudio(videoCtrl3.window_idx))
+                    menu_item_AudioCtrl.text = "关闭音频"
+                else
+                    menu_item_AudioCtrl.text = "开启音频"
+                rclick_menu.window_idx = videoCtrl3.window_idx
+                rclick_menu.open()
+            }
         }
     }
 
@@ -213,9 +283,6 @@ Rectangle {
         anchors.topMargin: 1
         color: "black"
 
-        property bool is_playing: false
-        property string play_node_id: ""
-
         VideoOutput {
             id: videoOutput4
             anchors.fill: parent
@@ -224,6 +291,25 @@ Rectangle {
 
         VideoCtrl {
             id: videoCtrl4
+            property int window_idx: -1
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: {
+                if(!mainctrl.getDeviceIsPlaying(
+                    mainctrl.getDeivceIdxByWindowIdx(
+                    videoCtrl4.window_idx))) return;
+                rclick_menu.x = mouse.x + parent.x
+                rclick_menu.y = mouse.y + parent.y
+                if(mainctrl.getWindowIsPlayingAudio(videoCtrl4.window_idx))
+                    menu_item_AudioCtrl.text = "关闭音频"
+                else
+                    menu_item_AudioCtrl.text = "开启音频"
+                rclick_menu.window_idx = videoCtrl4.window_idx
+                rclick_menu.open()
+            }
         }
     }
 

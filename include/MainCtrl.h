@@ -21,6 +21,8 @@ struct DeviceInfo {
     bool is_active;
     // 是否正在播放
     bool is_playing;
+    // 是否正在播放音频
+    bool is_playing_audio;
     // 播放占用窗口索引值
     int window_idx;
 };
@@ -47,6 +49,8 @@ public:
     // 获取设备信息
     Q_INVOKABLE QString getDeviceName(int idx);
     Q_INVOKABLE bool getDeviceIsPlaying(int idx);
+    Q_INVOKABLE bool getWindowIsPlayingAudio(int idx);
+    Q_INVOKABLE int getDeivceIdxByWindowIdx(int idx);
 
     // 通过设备注册码添加设备，返回设备索引值
     Q_INVOKABLE int addDevice(const QString & key);

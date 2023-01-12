@@ -7,6 +7,7 @@ VideoCtrl::VideoCtrl()
 , frame(nullptr)
 , audio_decoder(make_unique<AACDecoder>())
 , is_playing(false)
+, is_playing_audio(false)
 , audio(nullptr)
 , audio_io(nullptr) {
     // 信号槽绑定
@@ -47,6 +48,7 @@ VideoCtrl::VideoCtrl()
             audio = new QAudioOutput(audioFormat);
             audio_io = audio->start();
         }else {
+            if(!is_playing_audio) return;
             UINT32 all_len = 7 + len;
             BYTE num0 = ((all_len & 0x1800) >> 11) & 0x3;
             BYTE num1 = ((all_len & 0x7F8) >> 3) & 0xFF;
@@ -86,6 +88,7 @@ VideoCtrl::~VideoCtrl() {
 bool VideoCtrl::play(const QString url) {
     if(is_playing) return false;
     is_playing = true;
+    is_playing_audio = false;
     // 设置流地址
     videoCapture->setRtmpURL(url.toStdString());
     // 开始拉流
@@ -107,7 +110,16 @@ void VideoCtrl::stop() {
     }
     frame = nullptr;
     is_playing = false;
+    is_playing_audio = false;
     provider->flush();
+}
+
+void VideoCtrl::playAudio() {
+    is_playing_audio = true;
+}
+
+void VideoCtrl::stopAudio() {
+    is_playing_audio = false;
 }
 
 FrameProvider* VideoCtrl::frameProvider() {

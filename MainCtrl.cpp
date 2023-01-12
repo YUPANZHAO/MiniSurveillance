@@ -16,6 +16,14 @@ bool MainCtrl::getDeviceIsPlaying(int idx) {
     return devices[idx].is_playing;
 }
 
+bool MainCtrl::getWindowIsPlayingAudio(int idx) {
+    return devices[windows[idx].device_idx].is_playing_audio;
+}
+
+int MainCtrl::getDeivceIdxByWindowIdx(int idx) {
+    return windows[idx].device_idx;
+}
+
 int MainCtrl::addDevice(const QString & key) {
     auto [ctx, ret] = rpc->call({
         { "method", "get_device_info" },
@@ -31,6 +39,7 @@ int MainCtrl::addDevice(const QString & key) {
     info.rtmp_url = ctx.value("rtmp_url", "");
     info.is_active = true;
     info.is_playing = false;
+    info.is_playing_audio = false;
     info.window_idx = -1;
     devices.push_back(info);
     return devices.size() - 1;
@@ -58,7 +67,7 @@ int MainCtrl::playVideo(int device_idx) {
     if(window_idx == -1) return -1;
     // 视频在播放则停止覆盖
     if(windows[window_idx].is_playing) {
-        windows[window_idx].video_ctrl->stop();
+        stopVideo(windows[window_idx].device_idx);
     }
     // 播放视频
     bool ret = windows[window_idx].video_ctrl->play(device.rtmp_url.c_str());
@@ -72,7 +81,18 @@ int MainCtrl::playVideo(int device_idx) {
 }
 
 void MainCtrl::playAudio(int window_idx) {
-
+    debug("playAudio", window_idx);
+    if(window_idx < 0 || window_idx >= windows.size()) return;
+    // 获取窗口
+    auto & window = windows[window_idx];
+    if(window.device_idx < 0 || window.device_idx >= devices.size()) return;
+    // 获取设备
+    auto & device = devices[window.device_idx];
+    // 开启音频
+    if(window.is_playing) {
+        window.video_ctrl->playAudio();
+        device.is_playing_audio = true;
+    }
 }
 
 void MainCtrl::stopVideo(int device_idx) {
@@ -80,6 +100,7 @@ void MainCtrl::stopVideo(int device_idx) {
     if(device_idx < 0 || device_idx >= devices.size()) return;
     // 获取设备
     auto & device = devices[device_idx];
+    if(device.window_idx < 0 || device.window_idx >= windows.size()) return;
     // 获取窗口
     auto & window = windows[device.window_idx];
     // 关闭视频音频
@@ -88,11 +109,22 @@ void MainCtrl::stopVideo(int device_idx) {
     window.is_playing = false;
     window.device_idx = -1;
     device.is_playing = false;
+    device.is_playing_audio = false;
     device.window_idx = -1;
 }
 
 void MainCtrl::stopAudio(int window_idx) {
-
+    if(window_idx < 0 || window_idx >= windows.size()) return;
+    // 获取窗口
+    auto & window = windows[window_idx];
+    if(window.device_idx < 0 || window.device_idx >= devices.size()) return;
+    // 获取设备
+    auto & device = devices[window.device_idx];
+    // 关闭音频
+    if(window.is_playing) {
+        window.video_ctrl->stopAudio();
+    }
+    device.is_playing_audio = false;
 }
 
 int MainCtrl::findWindow() {

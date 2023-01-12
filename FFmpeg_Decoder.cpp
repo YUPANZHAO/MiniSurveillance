@@ -36,6 +36,8 @@ FFmpeg_Decoder::FFmpeg_Decoder(AVCodecID codec_id)
         debug("av_frame_alloc failed");
         return;
     }
+
+    inputBuf = new BYTE [INPUT_BUFFER_SIZE + AV_INPUT_BUFFER_PADDING_SIZE];
 }
 
 FFmpeg_Decoder::~FFmpeg_Decoder() {
@@ -57,13 +59,26 @@ FFmpeg_Decoder::~FFmpeg_Decoder() {
        avcodec_free_context(&codec_ctx);
        codec_ctx = NULL;
     }
+
+    if(packet) {
+        av_packet_free(&packet);
+        packet = nullptr;
+    }
+
+    if(inputBuf) {
+        delete [] inputBuf;
+        inputBuf = nullptr;
+    }
 }
 
 void FFmpeg_Decoder::receiveData(BYTE* data, UINT32 len) {
+    memcpy(inputBuf, data, len);
+    memset(inputBuf + len, 0, AV_INPUT_BUFFER_PADDING_SIZE);
+    BYTE* parserData = inputBuf;
     UINT32 ret;
     while(len > 0) {
         ret = av_parser_parse2(codec_parser_ctx, codec_ctx, &packet->data, &packet->size,
-                         data, len, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
+                         parserData, len, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
 
         if(ret < 0) {
             debug("Error while parsing");
@@ -72,7 +87,7 @@ void FFmpeg_Decoder::receiveData(BYTE* data, UINT32 len) {
 
         // debug(len, ret);
 
-        data += ret;
+        parserData += ret;
         len -= ret;
 
         if(!packet->size) {

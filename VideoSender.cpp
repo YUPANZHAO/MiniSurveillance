@@ -10,7 +10,7 @@ VideoSender::VideoSender()
         if(packet) {
             packet->m_nTimeStamp = RTMP_GetTime() - push_start_time;
             packets.push(packet);
-            // cout << "é˜Ÿåˆ—å¢žåŠ ä¸€ä¸ª packet time_stamp: " << packet->m_nTimeStamp <<  endl;
+            // cout << "¶ÓÁÐÔö¼ÓÒ»¸ö packet time_stamp: " << packet->m_nTimeStamp <<  endl;
         }
     };
     packets.setReleaseHandle([](RTMPPacket * & packet) {
@@ -61,7 +61,7 @@ void VideoSender::push() {
         do {
             rtmp = RTMP_Alloc();
             if(!rtmp) {
-                qDebug() << "ç”³è¯· RTMP å†…å­˜å¤±è´¥";
+                qDebug() << "ÉêÇë RTMP ÄÚ´æÊ§°Ü";
                 break;
             }
 
@@ -70,7 +70,7 @@ void VideoSender::push() {
 
             int ret = RTMP_SetupURL(rtmp, const_cast<char*>(rtmp_push_url.c_str()));
             if(!ret) {
-                qDebug() << "è®¾ç½® RTMP æŽ¨æµæœåŠ¡å™¨åœ°å€ " << rtmp_push_url.c_str() << " å¤±è´¥";
+                qDebug() << "ÉèÖÃ RTMP ÍÆÁ÷·þÎñÆ÷µØÖ· " << rtmp_push_url.c_str() << " Ê§°Ü";
                 break;
             }
 
@@ -78,13 +78,13 @@ void VideoSender::push() {
 
             ret = RTMP_Connect(rtmp, NULL);
             if(!ret) {
-                qDebug() << "è¿žæŽ¥ RTMP æœåŠ¡å™¨ " << rtmp_push_url.c_str() << " å¤±è´¥";
+                qDebug() << "Á¬½Ó RTMP ·þÎñÆ÷ " << rtmp_push_url.c_str() << " Ê§°Ü";
                 break;
             }
 
             ret = RTMP_ConnectStream(rtmp, 0);
             if(!ret) {
-                qDebug() << "è¿žæŽ¥ RTMP æµ " << rtmp_push_url.c_str() << " å¤±è´¥";
+                qDebug() << "Á¬½Ó RTMP Á÷ " << rtmp_push_url.c_str() << " Ê§°Ü";
                 break;
             }
 
@@ -92,7 +92,7 @@ void VideoSender::push() {
 
             packets.setWork(1);
 
-            qDebug() << "å¼€å§‹æŽ¨æµ";
+            qDebug() << "¿ªÊ¼ÍÆÁ÷";
             while(is_pushing) {
                 packets.pop(packet);
 
@@ -100,7 +100,7 @@ void VideoSender::push() {
                     continue;
                 }
 
-                // cout << "å–å‡ºä¸€ä¸ªæ•°æ®åŒ… time_stamp: " << packet->m_nTimeStamp << endl;
+                // cout << "È¡³öÒ»¸öÊý¾Ý°ü time_stamp: " << packet->m_nTimeStamp << endl;
 
                 packet->m_nInfoField2 = rtmp->m_stream_id;
 
@@ -113,7 +113,7 @@ void VideoSender::push() {
                 }
 
                 if(!ret) {
-                    qDebug() << "RTMP æ•°æ®åŒ…æŽ¨é€å¤±è´¥";
+                    qDebug() << "RTMP Êý¾Ý°üÍÆËÍÊ§°Ü";
                     break;
                 }
             }
@@ -134,7 +134,7 @@ void VideoSender::push() {
         packets.clear();
         is_pushing = false;
 
-        qDebug() << "æŽ¨æµçº¿ç¨‹ç»“æŸ";
+        qDebug() << "ÍÆÁ÷Ïß³Ì½áÊø";
     });
 }
 
@@ -196,7 +196,7 @@ void VideoSender::openAudio() {
         is_pushing_audio = false;
     });
 
-    qDebug() << "å¼€å¯éŸ³é¢‘æŽ¨æµ";
+    qDebug() << "¿ªÆôÒôÆµÍÆÁ÷";
 }
 
 void VideoSender::stopAudio() {
@@ -213,5 +213,5 @@ void VideoSender::stopAudio() {
         audioInput->stop();
         audioInput = nullptr;
     }
-    qDebug() << "å…³é—­éŸ³é¢‘æŽ¨æµ";
+    qDebug() << "¹Ø±ÕÒôÆµÍÆÁ÷";
 }

@@ -27,6 +27,8 @@ public:
 public:
     Q_INVOKABLE bool play(const QString url);
     Q_INVOKABLE void stop();
+    Q_INVOKABLE void playAudio();
+    Q_INVOKABLE void stopAudio();
 
     FrameProvider* frameProvider();
     void setFrameProvider(FrameProvider* provider);
@@ -42,6 +44,7 @@ private:
     unique_ptr<AACDecoder> audio_decoder;
 
     bool is_playing;
+    bool is_playing_audio;
 
     BYTE adts_header[7];
     QAudioFormat audioFormat;

@@ -32,6 +32,9 @@ protected:
     AVFrame* frame = nullptr;
     AVPacket* packet = nullptr;
 
+    static const int INPUT_BUFFER_SIZE = 1920 * 1080 * 2;
+    BYTE* inputBuf;
+
 };
 
 #endif // FFMPEG_DECODER_H
