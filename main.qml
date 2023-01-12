@@ -9,61 +9,39 @@ import CameraFilter 1.0
 import VideoSender 1.0
 
 Window {
-    width: 790
-    height: 720
+    width: 1401
+    height: 721
     visible: true
     title: qsTr("Mini Surveillance")
 
 Rectangle {
     id: mainWindow
     width: parent.width
-    height: parent.height / 2
+    height: parent.height
 
     // 设备列表单击事件
     function onListItemClicked(item) {
-        if(surface.is_playing === false) {
-            let ret = videoCtrl.play(item.rtmp_url)
-            if(ret === true) {
-                surface.is_playing = true
-                surface.play_node_id = item.id
-            }
-        }else if(surface.play_node_id !== item.id) {
-            videoCtrl.stop()
-            surface.is_playing = false
-            surface.play_node_id = -1
-            let ret = videoCtrl.play(item.rtmp_url)
-            if(ret === true) {
-                surface.is_playing = true
-                surface.play_node_id = item.id
-            }
+        if(surface1.is_playing) {
+            videoCtrl1.stop()
+            surface1.is_playing = false
         }else {
-            videoCtrl.stop()
-            surface.is_playing = false
-            surface.play_node_id = -1
+            videoCtrl1.playBykey(item.id)
+            surface1.is_playing = true
         }
     }
 
     // 设备列表
     ListView {
         id: list
-        width: mainWindow.width * 0.15
-        height: mainWindow.height
+        width: 120
+        height: mainWindow.height - btn_add_device.height
+        anchors.top: btn_add_device.bottom
         model: listModel
         delegate: listDelegate
 
         ListModel {
             id: listModel
             Component.onCompleted: {
-                listModel.append({
-                    "id":0,
-                    "name":"WSL",
-                    "rtmp_url":"rtmp://172.24.2.215:50051/hls/test"
-                })
-                listModel.append({
-                    "id":1,
-                    "name":"手机",
-                    "rtmp_url":"rtmp://172.24.0.119:50051/hls/test"
-                })
             }
         }
 
@@ -74,7 +52,7 @@ Rectangle {
             Button {
                 width: list.width
                 height: 50
-                text: model.name
+                text: model.id
                 onClicked: mainWindow.onListItemClicked(model)
             }
 
@@ -82,110 +60,113 @@ Rectangle {
         }
     }
 
-    // 监控画面
+    Button {
+        id: btn_add_device
+        width: list.width
+        height: 50
+        text: "添加设备"
+        onClicked: {
+            listModel.append({
+                "id":"1A2U52",
+                "rtmp_url":"rtmp://192.168.43.59:50051/live/1A2U52"
+            })
+        }
+    }
+
+    // 监控画面1
     Rectangle {
-        id: surface
-        width: parent.width - list.width;
-        height: parent.height
+        id: surface1
+        width: (parent.width - list.width) / 2
+        height: parent.height / 2;
         anchors.left: list.right
         anchors.top: mainWindow.top
-        anchors.topMargin: (mainWindow.height - surface.height) / 2
         color: "black"
 
         property bool is_playing: false
-        property int play_node_id: -1
+        property string play_node_id: ""
 
         VideoOutput {
-            id: videoOutput
+            id: videoOutput1
             anchors.fill: parent
-            source: videoCtrl.frameProvider
+            source: videoCtrl1.frameProvider
         }
 
         VideoCtrl {
-            id: videoCtrl
+            id: videoCtrl1
         }
     }
 
-}
-
-Rectangle {
-    id: myCamera
-    width: parent.width
-    height: parent.height / 2
-    anchors.top: mainWindow.bottom
-
-    Camera {
-        id: camera
-    }
-
-    CameraFilter {
-        id: filter
-        qmlCamera: camera
-    }
-
+    // 监控画面2
     Rectangle {
         id: surface2
-        width: parent.width - list.width
-        height: parent.height
-        anchors.left: parent.left
-        anchors.leftMargin: list.width
+        width: (parent.width - list.width) / 2
+        height: parent.height / 2;
+        anchors.left: surface1.right
+        anchors.top: mainWindow.top
+        anchors.leftMargin: 1
         color: "black"
+
+        property bool is_playing: false
+        property string play_node_id: ""
 
         VideoOutput {
             id: videoOutput2
             anchors.fill: parent
-            source: camera
+            source: videoCtrl2.frameProvider
         }
 
-    }
-
-    Button {
-        id: btn_push
-        width: list.width
-        height: 50
-        text: "Push"
-        onClicked: {
-            sender.setRtmpUrl("rtmp://172.24.0.119:50051/hls/test")
-            sender.push();
+        VideoCtrl {
+            id: videoCtrl2
         }
     }
 
-    Button {
-        id: btn_stop
-        width: list.width
-        height: 50
-        text: "Stop"
-        anchors.top: btn_push.bottom
-        onClicked: {
-            sender.stop()
+    // 监控画面3
+    Rectangle {
+        id: surface3
+        width: (parent.width - list.width) / 2
+        height: parent.height / 2;
+        anchors.left: list.right
+        anchors.top: surface1.bottom
+        anchors.topMargin: 1
+        color: "black"
+
+        property bool is_playing: false
+        property string play_node_id: ""
+
+        VideoOutput {
+            id: videoOutput3
+            anchors.fill: parent
+            source: videoCtrl3.frameProvider
+        }
+
+        VideoCtrl {
+            id: videoCtrl3
         }
     }
 
-    Button {
-        id: btn_openAudio
-        width: list.width
-        height: 50
-        text: "OpenAudio"
-        anchors.top: btn_stop.bottom
-        onClicked: {
-            sender.openAudio()
-        }
-    }
+    // 监控画面4
+    Rectangle {
+        id: surface4
+        width: (parent.width - list.width) / 2
+        height: parent.height / 2;
+        anchors.left: surface3.right
+        anchors.top: surface2.bottom
+        anchors.leftMargin: 1
+        anchors.topMargin: 1
+        color: "black"
 
-    Button {
-        id: btn_stopAudio
-        width: list.width
-        height: 50
-        text: "StopAudio"
-        anchors.top: btn_openAudio.bottom
-        onClicked: {
-            sender.stopAudio()
-        }
-    }
+        property bool is_playing: false
+        property string play_node_id: ""
 
-    VideoSender {
-        id: sender
-        cameraSource: filter
+        VideoOutput {
+            id: videoOutput4
+            anchors.fill: parent
+            source: videoCtrl4.frameProvider
+        }
+
+        VideoCtrl {
+            id: videoCtrl4
+        }
     }
 
 }

@@ -1,7 +1,8 @@
 QT += quick multimedia
 
-CONFIG += C++11
+CONFIG += c++17
 DEFINES += _DEBUG
+DEFINES += _WIN32_WINNT=0x600
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -14,6 +15,9 @@ SOURCES += \
         FFmpeg_Decoder.cpp \
         FrameProvider.cpp \
         H264Decoder.cpp \
+        IPC.grpc.pb.cc \
+        IPC.pb.cc \
+        IPCClient.cpp \
         VideoChannel.cpp \
         VideoCtrl.cpp \
         VideoSender.cpp \
@@ -34,6 +38,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 INCLUDEPATH += $$PWD/include
+INCLUDEPATH += $$PWD/include/grpc
 
 LIBS += $$PWD/libs/librtmp.a \
         -L$$PWD/libs/ffmpeg/ -lavcodec \
@@ -47,6 +52,53 @@ LIBS += $$PWD/libs/librtmp.a \
         $$PWD/libs/libfaac.a \
         $$PWD/libs/libx264.a
 
+LIBS += -L$$PWD/libs/grpc/ -labsl_bad_optional_access.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_bad_variant_access.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_base.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_city.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_civil_time.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_cord.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_debugging_internal.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_demangle_internal.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_exponential_biased.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_graphcycles_internal.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_hash.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_hashtablez_sampler.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_int128.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_log_severity.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_malloc_internal.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_raw_hash_set.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_raw_logging_internal.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_spinlock_wait.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_stacktrace.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_status.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_str_format_internal.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_strings.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_strings_internal.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_symbolize.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_synchronization.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_throw_delegate.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_time.dll
+LIBS += -L$$PWD/libs/grpc/ -labsl_time_zone.dll
+LIBS += -L$$PWD/libs/grpc/ -laddress_sorting.dll
+LIBS += -L$$PWD/libs/grpc/ -lcares.dll
+LIBS += -L$$PWD/libs/grpc/ -lcrypto.dll
+LIBS += -L$$PWD/libs/grpc/ -lgpr.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc_plugin_support.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc_unsecure.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc++.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc++_alts.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc++_error_details.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc++_reflection.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpc++_unsecure.dll
+LIBS += -L$$PWD/libs/grpc/ -lgrpcpp_channelz.dll
+LIBS += -L$$PWD/libs/grpc/ -llibprotobuf.dll
+LIBS += -L$$PWD/libs/grpc/ -llibprotobuf-lite.dll
+LIBS += -L$$PWD/libs/grpc/ -llibprotoc.dll
+LIBS += -L$$PWD/libs/grpc/ -lre2.dll
+LIBS += -L$$PWD/libs/grpc/ -lssl.dll
+LIBS += -L$$PWD/libs/grpc/ -lupb.dll
 
 LIBS += -lws2_32 -lwinmm
 HEADERS += \
@@ -56,6 +108,9 @@ HEADERS += \
     include/FFmpeg_Decoder.h \
     include/FrameProvider.h \
     include/H264Decoder.h \
+    include/IPC.grpc.pb.h \
+    include/IPC.pb.h \
+    include/IPCClient.h \
     include/SafeQueue.hpp \
     include/VideoCapture.h \
     include/VideoChannel.h \

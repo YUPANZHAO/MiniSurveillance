@@ -5,6 +5,7 @@
 #include "VideoCtrl.h"
 #include "CameraFilter.h"
 #include "VideoSender.h"
+#include "grpcpp/grpcpp.h"
 
 int main(int argc, char *argv[])
 {
@@ -31,6 +32,8 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+
+    debug("grpc version:", grpc_version_string());
 
     int ret = app.exec();
 
