@@ -107,6 +107,7 @@ void VideoCtrl::stop() {
     }
     frame = nullptr;
     is_playing = false;
+    provider->flush();
 }
 
 FrameProvider* VideoCtrl::frameProvider() {
@@ -135,17 +136,4 @@ auto VideoCtrl::convertFormat(AVPixelFormat pix_fmt) -> QVideoFrame::PixelFormat
     default: break;
     }
     return QVideoFrame::PixelFormat::NPixelFormats;
-}
-
-bool VideoCtrl::playBykey(const QString key) {
-    auto rpc = make_unique<IPCClient>();
-
-    auto [ ctx, ret ] = rpc->call({
-        { "method", "get_device_info" },
-        { "key", key.toStdString() }
-    });
-    if(!ret) return false;
-
-    string rtmp_url = ctx.value("rtmp_url", "");
-    return play(rtmp_url.c_str());
 }

@@ -50,3 +50,12 @@ void FrameProvider::onNewFrameReceived(const QVideoFrame & frame) {
 //        debug("ÍÆËÍ½á¹û£º", res);
     }
 }
+
+void FrameProvider::flush() {
+    if(_surface) {
+        if(_surface->isActive()) {
+            _surface->stop();
+        }
+        _surface->start(_format);
+    }
+}

@@ -23,6 +23,7 @@ public:
 
 public:
     void setFormat(int width, int heigth, QVideoFrame::PixelFormat format);
+    void flush();
 
 public slots:
     void onNewFrameReceived(const QVideoFrame & frame);

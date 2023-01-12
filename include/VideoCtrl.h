@@ -11,7 +11,6 @@
 #include "AACDecoder.h"
 #include <QAudioFormat>
 #include <QAudioOutput>
-#include "IPCClient.h"
 
 using namespace ZYP;
 using namespace std;
@@ -28,7 +27,6 @@ public:
 public:
     Q_INVOKABLE bool play(const QString url);
     Q_INVOKABLE void stop();
-    Q_INVOKABLE bool playBykey(const QString key);
 
     FrameProvider* frameProvider();
     void setFrameProvider(FrameProvider* provider);
