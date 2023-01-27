@@ -1,7 +1,7 @@
 #include "IPCClient.h"
 
 IPCClient::IPCClient() {
-    auto channel = grpc::CreateChannel("192.168.43.59:50052", grpc::InsecureChannelCredentials());
+    auto channel = grpc::CreateChannel("192.168.0.107:50052", grpc::InsecureChannelCredentials());
     _stub = make_unique<IPCSrv::Stub>(channel);
 }
 
@@ -33,3 +33,4 @@ auto IPCClient::call(const json & ctx) -> tuple<json, bool> {
 
     return { json(), false };
 }
+

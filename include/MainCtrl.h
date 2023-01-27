@@ -15,6 +15,8 @@ using namespace std;
 struct DeviceInfo {
     // 设备名称
     string name;
+    // 设备注册码
+    string key;
     // RTMP流地址
     string rtmp_url;
     // 是否在线
@@ -66,6 +68,13 @@ public:
     // 关闭音频，参数同播放音频一致
     Q_INVOKABLE void stopAudio(int window_idx);
 
+    // 开启对讲
+    Q_INVOKABLE bool startTalk(int window_idx);
+    // 关闭对讲
+    Q_INVOKABLE void stopTalk(int window_idx);
+    // 获取对讲的rtmp地址
+    Q_INVOKABLE QString getTalkRtmpUrl();
+
 private:
     // 查找可用窗口，若无可以窗口，默认替换第一个
     int findWindow();
@@ -77,6 +86,10 @@ private:
     vector<WindowInfo> windows;
     // RPC请求类
     unique_ptr<IPCClient> rpc;
+    // 是否正在对讲
+    bool is_talking;
+    // 对讲的rtmp地址
+    string talk_rtmp_push_url;
 };
 
 #endif // MAINCTRL_H

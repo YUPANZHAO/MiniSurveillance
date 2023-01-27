@@ -42,11 +42,21 @@ class IPCSrv final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::IPC::IPCReply>> PrepareAsynccall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::IPC::IPCReply>>(PrepareAsynccallRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::IPC::IPCReply>> streamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::IPC::IPCReply>>(streamCallRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::IPC::IPCReply>> AsyncstreamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::IPC::IPCReply>>(AsyncstreamCallRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::IPC::IPCReply>> PrepareAsyncstreamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::IPC::IPCReply>>(PrepareAsyncstreamCallRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
       virtual void call(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::IPC::IPCReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void call(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::IPC::IPCReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void streamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::grpc::ClientReadReactor< ::IPC::IPCReply>* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -54,6 +64,9 @@ class IPCSrv final {
    private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::IPC::IPCReply>* AsynccallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::IPC::IPCReply>* PrepareAsynccallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::IPC::IPCReply>* streamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::IPC::IPCReply>* AsyncstreamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::IPC::IPCReply>* PrepareAsyncstreamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -65,11 +78,21 @@ class IPCSrv final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::IPC::IPCReply>> PrepareAsynccall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::IPC::IPCReply>>(PrepareAsynccallRaw(context, request, cq));
     }
+    std::unique_ptr< ::grpc::ClientReader< ::IPC::IPCReply>> streamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::IPC::IPCReply>>(streamCallRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::IPC::IPCReply>> AsyncstreamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::IPC::IPCReply>>(AsyncstreamCallRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::IPC::IPCReply>> PrepareAsyncstreamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::IPC::IPCReply>>(PrepareAsyncstreamCallRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
       void call(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::IPC::IPCReply* response, std::function<void(::grpc::Status)>) override;
       void call(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::IPC::IPCReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void streamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::grpc::ClientReadReactor< ::IPC::IPCReply>* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -83,7 +106,11 @@ class IPCSrv final {
     class async async_stub_{this};
     ::grpc::ClientAsyncResponseReader< ::IPC::IPCReply>* AsynccallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::IPC::IPCReply>* PrepareAsynccallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::IPC::IPCReply>* streamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request) override;
+    ::grpc::ClientAsyncReader< ::IPC::IPCReply>* AsyncstreamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::IPC::IPCReply>* PrepareAsyncstreamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_call_;
+    const ::grpc::internal::RpcMethod rpcmethod_streamCall_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -92,6 +119,7 @@ class IPCSrv final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status call(::grpc::ServerContext* context, const ::IPC::IPCRequest* request, ::IPC::IPCReply* response);
+    virtual ::grpc::Status streamCall(::grpc::ServerContext* context, const ::IPC::IPCRequest* request, ::grpc::ServerWriter< ::IPC::IPCReply>* writer);
   };
   template <class BaseClass>
   class WithAsyncMethod_call : public BaseClass {
@@ -113,7 +141,27 @@ class IPCSrv final {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_call<Service > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_streamCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_streamCall() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_streamCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status streamCall(::grpc::ServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::grpc::ServerWriter< ::IPC::IPCReply>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequeststreamCall(::grpc::ServerContext* context, ::IPC::IPCRequest* request, ::grpc::ServerAsyncWriter< ::IPC::IPCReply>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_call<WithAsyncMethod_streamCall<Service > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_call : public BaseClass {
    private:
@@ -141,7 +189,29 @@ class IPCSrv final {
     virtual ::grpc::ServerUnaryReactor* call(
       ::grpc::CallbackServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::IPC::IPCReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_call<Service > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_streamCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_streamCall() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::IPC::IPCRequest, ::IPC::IPCReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::IPC::IPCRequest* request) { return this->streamCall(context, request); }));
+    }
+    ~WithCallbackMethod_streamCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status streamCall(::grpc::ServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::grpc::ServerWriter< ::IPC::IPCReply>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::IPC::IPCReply>* streamCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_call<WithCallbackMethod_streamCall<Service > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_call : public BaseClass {
@@ -156,6 +226,23 @@ class IPCSrv final {
     }
     // disable synchronous version of this method
     ::grpc::Status call(::grpc::ServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::IPC::IPCReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_streamCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_streamCall() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_streamCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status streamCall(::grpc::ServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::grpc::ServerWriter< ::IPC::IPCReply>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -181,6 +268,26 @@ class IPCSrv final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_streamCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_streamCall() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_streamCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status streamCall(::grpc::ServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::grpc::ServerWriter< ::IPC::IPCReply>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequeststreamCall(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_call : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -201,6 +308,28 @@ class IPCSrv final {
     }
     virtual ::grpc::ServerUnaryReactor* call(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_streamCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_streamCall() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->streamCall(context, request); }));
+    }
+    ~WithRawCallbackMethod_streamCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status streamCall(::grpc::ServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::grpc::ServerWriter< ::IPC::IPCReply>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* streamCall(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_call : public BaseClass {
@@ -230,8 +359,35 @@ class IPCSrv final {
     virtual ::grpc::Status Streamedcall(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::IPC::IPCRequest,::IPC::IPCReply>* server_unary_streamer) = 0;
   };
   typedef WithStreamedUnaryMethod_call<Service > StreamedUnaryService;
-  typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_call<Service > StreamedService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_streamCall : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithSplitStreamingMethod_streamCall() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::SplitServerStreamingHandler<
+          ::IPC::IPCRequest, ::IPC::IPCReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerSplitStreamer<
+                     ::IPC::IPCRequest, ::IPC::IPCReply>* streamer) {
+                       return this->StreamedstreamCall(context,
+                         streamer);
+                  }));
+    }
+    ~WithSplitStreamingMethod_streamCall() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status streamCall(::grpc::ServerContext* /*context*/, const ::IPC::IPCRequest* /*request*/, ::grpc::ServerWriter< ::IPC::IPCReply>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status StreamedstreamCall(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::IPC::IPCRequest,::IPC::IPCReply>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_streamCall<Service > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_call<WithSplitStreamingMethod_streamCall<Service > > StreamedService;
 };
 
 }  // namespace IPC

@@ -23,6 +23,7 @@ namespace IPC {
 
 static const char* IPCSrv_method_names[] = {
   "/IPC.IPCSrv/call",
+  "/IPC.IPCSrv/streamCall",
 };
 
 std::unique_ptr< IPCSrv::Stub> IPCSrv::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -33,6 +34,7 @@ std::unique_ptr< IPCSrv::Stub> IPCSrv::NewStub(const std::shared_ptr< ::grpc::Ch
 
 IPCSrv::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_call_(IPCSrv_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_streamCall_(IPCSrv_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
 ::grpc::Status IPCSrv::Stub::call(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::IPC::IPCReply* response) {
@@ -58,6 +60,22 @@ void IPCSrv::Stub::async::call(::grpc::ClientContext* context, const ::IPC::IPCR
   return result;
 }
 
+::grpc::ClientReader< ::IPC::IPCReply>* IPCSrv::Stub::streamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::IPC::IPCReply>::Create(channel_.get(), rpcmethod_streamCall_, context, request);
+}
+
+void IPCSrv::Stub::async::streamCall(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::grpc::ClientReadReactor< ::IPC::IPCReply>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::IPC::IPCReply>::Create(stub_->channel_.get(), stub_->rpcmethod_streamCall_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::IPC::IPCReply>* IPCSrv::Stub::AsyncstreamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::IPC::IPCReply>::Create(channel_.get(), cq, rpcmethod_streamCall_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::IPC::IPCReply>* IPCSrv::Stub::PrepareAsyncstreamCallRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::IPC::IPCReply>::Create(channel_.get(), cq, rpcmethod_streamCall_, context, request, false, nullptr);
+}
+
 IPCSrv::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       IPCSrv_method_names[0],
@@ -69,6 +87,16 @@ IPCSrv::Service::Service() {
              ::IPC::IPCReply* resp) {
                return service->call(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      IPCSrv_method_names[1],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< IPCSrv::Service, ::IPC::IPCRequest, ::IPC::IPCReply>(
+          [](IPCSrv::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::IPC::IPCRequest* req,
+             ::grpc::ServerWriter<::IPC::IPCReply>* writer) {
+               return service->streamCall(ctx, req, writer);
+             }, this)));
 }
 
 IPCSrv::Service::~Service() {
@@ -78,6 +106,13 @@ IPCSrv::Service::~Service() {
   (void) context;
   (void) request;
   (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status IPCSrv::Service::streamCall(::grpc::ServerContext* context, const ::IPC::IPCRequest* request, ::grpc::ServerWriter< ::IPC::IPCReply>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

@@ -80,13 +80,14 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_IPC_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\tIPC.proto\022\003IPC\"\032\n\nIPCRequest\022\014\n\004body\030\001"
-  " \001(\t\"\030\n\010IPCReply\022\014\n\004body\030\001 \001(\t22\n\006IPCSrv"
+  " \001(\t\"\030\n\010IPCReply\022\014\n\004body\030\001 \001(\t2d\n\006IPCSrv"
   "\022(\n\004call\022\017.IPC.IPCRequest\032\r.IPC.IPCReply"
-  "\"\000b\006proto3"
+  "\"\000\0220\n\nstreamCall\022\017.IPC.IPCRequest\032\r.IPC."
+  "IPCReply\"\0000\001b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_IPC_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_IPC_2eproto = {
-    false, false, 130, descriptor_table_protodef_IPC_2eproto,
+    false, false, 180, descriptor_table_protodef_IPC_2eproto,
     "IPC.proto",
     &descriptor_table_IPC_2eproto_once, nullptr, 0, 2,
     schemas, file_default_instances, TableStruct_IPC_2eproto::offsets,

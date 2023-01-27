@@ -49,6 +49,65 @@ Menu {
             mainctrl.stopVideo(mainctrl.getDeivceIdxByWindowIdx(rclick_menu.window_idx))
         }
     }
+    MenuItem {
+        id: menu_item_AudioTalk
+        text: "开启/关闭语音对讲"
+        onClicked: {
+            if(camera.cameraState == Camera.ActiveState) {
+                mainctrl.stopTalk(rclick_menu.window_idx)
+                sender.stop()
+                camera.stop()
+                updateTalkWindowPos(rclick_menu.window_idx);
+                talk_videoOutput.visible = false
+            }else {
+                let ret = mainctrl.startTalk(rclick_menu.window_idx)
+                if(ret === false) {
+                    console.log("开启对讲失败")
+                    return
+                }
+                let rtmp_push_url = mainctrl.getTalkRtmpUrl();
+                sender.setRtmpUrl(rtmp_push_url)
+                sender.push();
+                sender.openAudio()
+                camera.start()
+                updateTalkWindowPos(rclick_menu.window_idx);
+                talk_videoOutput.visible = true
+            }
+        }
+    }
+}
+
+function updateTalkWindowPos(window_idx) {
+    if(window_idx === 0) {
+        talk_videoOutput.x = surface1.x + surface1.width - talk_videoOutput.width - 10
+        talk_videoOutput.y = surface1.y + 10
+    }else if(window_idx === 1) {
+        talk_videoOutput.x = surface2.x + surface2.width - talk_videoOutput.width - 10
+        talk_videoOutput.y = surface2.y + 10
+    }else if(window_idx === 2) {
+        talk_videoOutput.x = surface3.x + surface3.width - talk_videoOutput.width - 10
+        talk_videoOutput.y = surface3.y + 10
+    }else {
+        talk_videoOutput.x = surface4.x + surface4.width - talk_videoOutput.width - 10
+        talk_videoOutput.y = surface4.y + 10
+    }
+}
+
+Camera {
+    id: camera
+    Component.onCompleted: {
+        camera.stop()
+    }
+}
+
+CameraFilter {
+    id: cameraFilter
+    qmlCamera: camera
+}
+
+VideoSender {
+    id: sender
+    cameraSource: cameraFilter
 }
 
 Rectangle {
@@ -313,6 +372,23 @@ Rectangle {
         }
     }
 
+    // 对讲画面
+    VideoOutput {
+        id: talk_videoOutput
+        width: surface1.width * 0.3
+        height: width * 9 / 16
+        source: camera
+        visible: false
+
+        MouseArea {
+            anchors.fill: parent
+            drag.target: talk_videoOutput
+            drag.minimumX: 0
+            drag.minimumY: 0
+            drag.maximumX: mainWindow.width - talk_videoOutput.width
+            drag.maximumY: mainWindow.height - talk_videoOutput.height
+        }
+    }
 }
 
 }

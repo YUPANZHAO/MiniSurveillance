@@ -1,6 +1,7 @@
 #include "MainCtrl.h"
 
-MainCtrl::MainCtrl() {
+MainCtrl::MainCtrl()
+: is_talking(false) {
     rpc = make_unique<IPCClient>();
 }
 
@@ -9,18 +10,24 @@ MainCtrl::~MainCtrl() {
 }
 
 QString MainCtrl::getDeviceName(int idx) {
+    if(idx < 0 || idx >= devices.size()) return "";
     return devices[idx].name.c_str();
 }
 
 bool MainCtrl::getDeviceIsPlaying(int idx) {
+    if(idx < 0 || idx >= devices.size()) return false;
     return devices[idx].is_playing;
 }
 
 bool MainCtrl::getWindowIsPlayingAudio(int idx) {
-    return devices[windows[idx].device_idx].is_playing_audio;
+    if(idx < 0 || idx >= windows.size()) return false;
+    int window_idx = windows[idx].device_idx;
+    if(window_idx < 0 || window_idx >= devices.size()) return false;
+    return devices[window_idx].is_playing_audio;
 }
 
 int MainCtrl::getDeivceIdxByWindowIdx(int idx) {
+    if(idx < 0 || idx >= windows.size()) return -1;
     return windows[idx].device_idx;
 }
 
@@ -36,6 +43,7 @@ int MainCtrl::addDevice(const QString & key) {
 
     DeviceInfo info;
     info.name = ctx.value("name", "未命名设备");
+    info.key = key.toStdString();
     info.rtmp_url = ctx.value("rtmp_url", "");
     info.is_active = true;
     info.is_playing = false;
@@ -137,4 +145,50 @@ int MainCtrl::findWindow() {
     }
     debug("窗口idx:", idx);
     return idx;
+}
+
+bool MainCtrl::startTalk(int window_idx) {
+    if(is_talking) return false;
+    if(window_idx < 0 || window_idx >= windows.size()) return false;
+    // 获取窗口
+    auto & window = windows[window_idx];
+    if(window.device_idx < 0 || window.device_idx >= devices.size()) return false;
+    // 获取设备
+    auto & device = devices[window.device_idx];
+    // 通知连接设备
+    auto [ctx, ret] = rpc->call({
+        { "method", "talk_ctrl" },
+        { "ctrl_type", "start" },
+        { "device_key", device.key }
+    });
+    if(!ret) return false;
+    string req_talk_ret = ctx.value("result", "");
+    if(req_talk_ret != "success") {
+        debug("对讲开启失败, err_msg:", ctx.value("err_msg", ""));
+        return false;
+    }
+    talk_rtmp_push_url = ctx.value("rtmp_push_url", "");
+    is_talking = true;
+    return true;
+}
+
+void MainCtrl::stopTalk(int window_idx) {
+    if(!is_talking) return;
+    if(window_idx < 0 || window_idx >= windows.size()) return;
+    // 获取窗口
+    auto & window = windows[window_idx];
+    if(window.device_idx < 0 || window.device_idx >= devices.size()) return;
+    // 获取设备
+    auto & device = devices[window.device_idx];
+    // 通知连接设备
+    rpc->call({
+        { "method", "talk_ctrl" },
+        { "ctrl_type", "stop" },
+        { "device_key", device.key }
+    });
+    is_talking = false;
+}
+
+QString MainCtrl::getTalkRtmpUrl() {
+    return talk_rtmp_push_url.c_str();
 }
