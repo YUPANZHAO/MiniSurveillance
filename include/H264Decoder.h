@@ -12,7 +12,7 @@ using namespace ZYP;
 class H264Decoder : public FFmpeg_Decoder {
 
     // data len width height pix_fmt
-    using FrameCallBack = function<void(BYTE*,UINT32,UINT32,UINT32,AVPixelFormat)>;
+    using FrameCallBack = function<void(BYTE*,UINT32,UINT32,UINT32,UINT32,AVPixelFormat)>;
 
     static const int MAX_BUF_SIZE = 1920 * 1080 * 3 / 2;
 

@@ -8,12 +8,12 @@
 #include <functional>
 #include <grpcpp/support/async_stream.h>
 #include <grpcpp/support/async_unary_call.h>
-#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/channel_interface.h>
 #include <grpcpp/impl/client_unary_call.h>
 #include <grpcpp/support/client_callback.h>
 #include <grpcpp/support/message_allocator.h>
 #include <grpcpp/support/method_handler.h>
-#include <grpcpp/impl/codegen/rpc_service_method.h>
+#include <grpcpp/impl/rpc_service_method.h>
 #include <grpcpp/support/server_callback.h>
 #include <grpcpp/impl/codegen/server_callback_handlers.h>
 #include <grpcpp/server_context.h>
@@ -24,6 +24,7 @@ namespace IPC {
 static const char* IPCSrv_method_names[] = {
   "/IPC.IPCSrv/call",
   "/IPC.IPCSrv/streamCall",
+  "/IPC.IPCSrv/recordDownload",
 };
 
 std::unique_ptr< IPCSrv::Stub> IPCSrv::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -35,6 +36,7 @@ std::unique_ptr< IPCSrv::Stub> IPCSrv::NewStub(const std::shared_ptr< ::grpc::Ch
 IPCSrv::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_call_(IPCSrv_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_streamCall_(IPCSrv_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_recordDownload_(IPCSrv_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
 ::grpc::Status IPCSrv::Stub::call(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::IPC::IPCReply* response) {
@@ -76,6 +78,22 @@ void IPCSrv::Stub::async::streamCall(::grpc::ClientContext* context, const ::IPC
   return ::grpc::internal::ClientAsyncReaderFactory< ::IPC::IPCReply>::Create(channel_.get(), cq, rpcmethod_streamCall_, context, request, false, nullptr);
 }
 
+::grpc::ClientReader< ::IPC::FileReply>* IPCSrv::Stub::recordDownloadRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::IPC::FileReply>::Create(channel_.get(), rpcmethod_recordDownload_, context, request);
+}
+
+void IPCSrv::Stub::async::recordDownload(::grpc::ClientContext* context, const ::IPC::IPCRequest* request, ::grpc::ClientReadReactor< ::IPC::FileReply>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::IPC::FileReply>::Create(stub_->channel_.get(), stub_->rpcmethod_recordDownload_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::IPC::FileReply>* IPCSrv::Stub::AsyncrecordDownloadRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::IPC::FileReply>::Create(channel_.get(), cq, rpcmethod_recordDownload_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::IPC::FileReply>* IPCSrv::Stub::PrepareAsyncrecordDownloadRaw(::grpc::ClientContext* context, const ::IPC::IPCRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::IPC::FileReply>::Create(channel_.get(), cq, rpcmethod_recordDownload_, context, request, false, nullptr);
+}
+
 IPCSrv::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       IPCSrv_method_names[0],
@@ -97,6 +115,16 @@ IPCSrv::Service::Service() {
              ::grpc::ServerWriter<::IPC::IPCReply>* writer) {
                return service->streamCall(ctx, req, writer);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      IPCSrv_method_names[2],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< IPCSrv::Service, ::IPC::IPCRequest, ::IPC::FileReply>(
+          [](IPCSrv::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::IPC::IPCRequest* req,
+             ::grpc::ServerWriter<::IPC::FileReply>* writer) {
+               return service->recordDownload(ctx, req, writer);
+             }, this)));
 }
 
 IPCSrv::Service::~Service() {
@@ -110,6 +138,13 @@ IPCSrv::Service::~Service() {
 }
 
 ::grpc::Status IPCSrv::Service::streamCall(::grpc::ServerContext* context, const ::IPC::IPCRequest* request, ::grpc::ServerWriter< ::IPC::IPCReply>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status IPCSrv::Service::recordDownload(::grpc::ServerContext* context, const ::IPC::IPCRequest* request, ::grpc::ServerWriter< ::IPC::FileReply>* writer) {
   (void) context;
   (void) request;
   (void) writer;

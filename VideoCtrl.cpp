@@ -64,7 +64,7 @@ VideoCtrl::VideoCtrl()
         }
     });
     // H264 解码，获取帧原始数据
-    video_decoder->setFrameCallBack([this](BYTE* data, UINT32 len, UINT32 width, UINT32 height, AVPixelFormat pix_fmt) {
+    video_decoder->setFrameCallBack([this](BYTE* data, UINT32 len, UINT32 width, UINT32 height, UINT32 fps, AVPixelFormat pix_fmt) {
         if(!frame) {
             frame = make_unique<QVideoFrame>(len, QSize(width, height), width, convertFormat(pix_fmt));
         }

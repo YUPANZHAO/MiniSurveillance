@@ -21,6 +21,7 @@ void H264Decoder::setFrameCallBack(FrameCallBack cb) {
 void H264Decoder::handleOneFrame(AVFrame* frame) {
     UINT32 width = frame->width;
     UINT32 height = frame->height;
+    UINT32 fps = codec_ctx->framerate.num;
 //    debug("»ñµÃÒ»Ö¡", width, height);
     int ysize = width * height;
     int uvsize = ysize >> 2;
@@ -28,5 +29,5 @@ void H264Decoder::handleOneFrame(AVFrame* frame) {
     memcpy(buf, frame->data[0], ysize);
     memcpy(buf + ysize, frame->data[1], uvsize);
     memcpy(buf + ysize + uvsize, frame->data[2], uvsize);
-    frameCallBack(buf, bufsize, width, height, codec_ctx->pix_fmt);
+    frameCallBack(buf, bufsize, width, height, fps, codec_ctx->pix_fmt);
 }

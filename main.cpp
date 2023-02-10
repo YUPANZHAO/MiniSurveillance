@@ -6,6 +6,7 @@
 #include "CameraFilter.h"
 #include "VideoSender.h"
 #include "MainCtrl.h"
+#include "RecordCtrl.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<CameraFilter>("CameraFilter", 1, 0, "CameraFilter");
     qmlRegisterType<VideoSender>("VideoSender", 1, 0, "VideoSender");
     qmlRegisterType<MainCtrl>("MainCtrl", 1, 0, "MainCtrl");
+    qmlRegisterType<RecordCtrl>("RecordCtrl", 1, 0, "RecordCtrl");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

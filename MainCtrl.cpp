@@ -1,12 +1,25 @@
 #include "MainCtrl.h"
 
 MainCtrl::MainCtrl()
-: is_talking(false) {
+: is_talking(false)
+, msg_cb_thread(nullptr) {
     rpc = make_unique<IPCClient>();
+    startMessageCallBack();
+    auto ret = rpc->recordDownload({
+        { "key", "1A2U52" },
+        { "begin_time", "2023-2-6 13:22:05" },
+        { "end_time", "2023-2-6 14:00:00" }
+    });
+    if(ret == nullopt) debug("录像文件获取失败");
+    else debug("录像存放位置:", *ret);
 }
 
 MainCtrl::~MainCtrl() {
-
+//    rpc->call({
+//        { "method", "device_quit" },
+//        { "id", "client" }
+//    });
+//    msg_cb_thread->join();
 }
 
 QString MainCtrl::getDeviceName(int idx) {
@@ -34,6 +47,7 @@ int MainCtrl::getDeivceIdxByWindowIdx(int idx) {
 int MainCtrl::addDevice(const QString & key) {
     auto [ctx, ret] = rpc->call({
         { "method", "get_device_info" },
+        { "user", "client" },
         { "key", key.toStdString() }
     });
     if(!ret) {
@@ -191,4 +205,20 @@ void MainCtrl::stopTalk(int window_idx) {
 
 QString MainCtrl::getTalkRtmpUrl() {
     return talk_rtmp_push_url.c_str();
+}
+
+void MainCtrl::startMessageCallBack() {
+    msg_cb_thread = make_unique<std::thread>([this]() {
+        this->rpc->streamCall({
+            { "method", "message_callback" },
+            { "id", "client" }
+        },
+        [this](const string & msg) {
+            this->MessageHandle(msg);
+        });
+    });
+}
+
+void MainCtrl::MessageHandle(const string & msg) {
+    debug("receive msg:", msg);
 }

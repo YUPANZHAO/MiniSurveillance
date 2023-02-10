@@ -8,6 +8,7 @@ import QtQml.Models 2.15
 import CameraFilter 1.0
 import VideoSender 1.0
 import MainCtrl 1.0
+import RecordCtrl 1.0
 
 Window {
     width: 1401
@@ -110,21 +111,25 @@ VideoSender {
     cameraSource: cameraFilter
 }
 
+// 设备列表单击事件
+function onListItemClicked(item) {
+    if(btn_change_window.window_name == "surveillance") {
+        mainctrl.playVideo(item.id)
+    }else if(btn_change_window.window_name == "record") {
+
+    }
+}
+
 Rectangle {
     id: mainWindow
     width: parent.width
     height: parent.height
 
-    // 设备列表单击事件
-    function onListItemClicked(item) {
-        mainctrl.playVideo(item.id)
-    }
-
     // 设备列表
     ListView {
         id: list
         width: 120
-        height: mainWindow.height - btn_add_device.height
+        height: mainWindow.height - btn_add_device.height - btn_change_window.height
         anchors.top: btn_add_device.bottom
         model: listModel
         delegate: listDelegate
@@ -387,6 +392,153 @@ Rectangle {
             drag.minimumY: 0
             drag.maximumX: mainWindow.width - talk_videoOutput.width
             drag.maximumY: mainWindow.height - talk_videoOutput.height
+        }
+    }
+}
+
+Button {
+    id: btn_change_window
+    width: list.width
+    height: 50
+    text: "录像窗口"
+    x: 0
+    y: parent.height - height
+    property string window_name: "surveillance"
+    onClicked: {
+        if(window_name == "surveillance") {
+            window_name = "record"
+            text = "监控窗口"
+            record_window.visible = true
+        }else if(window_name == "record") {
+            window_name = "surveillance"
+            text = "录像窗口"
+            record_ctrl.stop()
+            record_window.visible = false
+        }
+    }
+}
+
+RecordCtrl {
+    id: record_ctrl
+}
+
+// 录像回放窗口
+Rectangle {
+    id: record_window
+    width: parent.width - list.width
+    height: parent.height
+    visible: false
+    x: list.width
+    y: 0
+    color: "white"
+
+    Rectangle {
+        id: record_surface
+        width: parent.width
+        height: parent.height - record_btn_group.height
+        color: "black"
+        VideoOutput {
+            id: record_video_output
+            source: record_ctrl.frameProvider
+            anchors.fill: parent
+        }
+    }
+
+    Rectangle {
+        id: record_btn_group
+        width: parent.width
+        height: 60
+        anchors.top: record_surface.bottom
+
+        Button {
+            id: btn_play
+            text: "播放"
+            height: 40
+            anchors.top: parent.top
+            anchors.topMargin: (record_btn_group.height - btn_play.height) / 2
+            anchors.left: parent.left
+            anchors.leftMargin: (parent.width - btn_play.width - btn_stop.width - btn_pause.width - btn_step_sec_backward.width - btn_step_sec_forward.width - btn_step_backward_one_frame.width - btn_step_forward_one_frame.width - 120) / 2
+            onClicked: {
+                record_ctrl.play("E://rtmp//gRpcServer//stream_records//1A2U52//1A2U52_2023_02_10_07_30_2023_02_10_07_31.flv")
+            }
+        }
+
+        Button {
+            id: btn_stop
+            text: "关闭"
+            anchors.top: parent.top
+            anchors.topMargin: (record_btn_group.height - btn_play.height) / 2
+            anchors.left: btn_play.right
+            anchors.leftMargin: 20
+            height: btn_play.height
+            onClicked: {
+                record_ctrl.stop()
+            }
+        }
+
+        Button {
+            id: btn_pause
+            text: "暂停/继续"
+            anchors.top: parent.top
+            anchors.topMargin: (record_btn_group.height - btn_play.height) / 2
+            anchors.left: btn_stop.right
+            anchors.leftMargin: 20
+            height: btn_play.height
+            onClicked: {
+                record_ctrl.pause()
+            }
+        }
+
+        Button {
+            id: btn_step_sec_backward
+            text: "后退5秒"
+            anchors.top: parent.top
+            anchors.topMargin: (record_btn_group.height - btn_play.height) / 2
+            anchors.left: btn_pause.right
+            anchors.leftMargin: 20
+            height: btn_play.height
+            onClicked: {
+                record_ctrl.step_by_second(-5)
+            }
+        }
+
+        Button {
+            id: btn_step_sec_forward
+            text: "前进5秒"
+            anchors.top: parent.top
+            anchors.topMargin: (record_btn_group.height - btn_play.height) / 2
+            anchors.left: btn_step_sec_backward.right
+            anchors.leftMargin: 20
+            height: btn_play.height
+            onClicked: {
+                record_ctrl.step_by_second(5)
+            }
+        }
+
+        Button {
+            id: btn_step_backward_one_frame
+            text: "单帧后退"
+            anchors.top: parent.top
+            anchors.topMargin: (record_btn_group.height - btn_play.height) / 2
+            anchors.left: btn_step_sec_forward.right
+            anchors.leftMargin: 20
+            height: btn_play.height
+            onClicked: {
+                record_ctrl.step_one_frame_backward()
+            }
+        }
+
+        Button {
+            id: btn_step_forward_one_frame
+            text: "单帧前进"
+            anchors.top: parent.top
+            anchors.topMargin: (record_btn_group.height - btn_play.height) / 2
+            anchors.left: btn_step_backward_one_frame.right
+            anchors.leftMargin: 20
+            height: btn_play.height
+            onClicked: {
+                record_ctrl.step_one_frame_forward()
+            }
         }
     }
 }

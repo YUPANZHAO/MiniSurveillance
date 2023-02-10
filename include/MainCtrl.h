@@ -6,6 +6,7 @@
 #include "VideoCtrl.h"
 #include <vector>
 #include <memory>
+#include <thread>
 #include "IPCClient.h"
 
 using namespace ZYP;
@@ -79,6 +80,11 @@ private:
     // 查找可用窗口，若无可以窗口，默认替换第一个
     int findWindow();
 
+    // 开启消息回调
+    void startMessageCallBack();
+    // 消息回调处理函数
+    void MessageHandle(const string & msg);
+
 private:
     // 存储设备信息
     vector<DeviceInfo> devices;
@@ -90,6 +96,8 @@ private:
     bool is_talking;
     // 对讲的rtmp地址
     string talk_rtmp_push_url;
+    // 消息回调线程
+    unique_ptr<std::thread> msg_cb_thread;
 };
 
 #endif // MAINCTRL_H

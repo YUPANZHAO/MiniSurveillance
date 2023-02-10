@@ -45,6 +45,9 @@ struct TableStruct_IPC_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_IPC_2eproto;
 namespace IPC {
+class FileReply;
+struct FileReplyDefaultTypeInternal;
+extern FileReplyDefaultTypeInternal _FileReply_default_instance_;
 class IPCReply;
 struct IPCReplyDefaultTypeInternal;
 extern IPCReplyDefaultTypeInternal _IPCReply_default_instance_;
@@ -53,6 +56,7 @@ struct IPCRequestDefaultTypeInternal;
 extern IPCRequestDefaultTypeInternal _IPCRequest_default_instance_;
 }  // namespace IPC
 PROTOBUF_NAMESPACE_OPEN
+template<> ::IPC::FileReply* Arena::CreateMaybeMessage<::IPC::FileReply>(Arena*);
 template<> ::IPC::IPCReply* Arena::CreateMaybeMessage<::IPC::IPCReply>(Arena*);
 template<> ::IPC::IPCRequest* Arena::CreateMaybeMessage<::IPC::IPCRequest>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
@@ -364,6 +368,159 @@ class IPCReply final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_IPC_2eproto;
 };
+// -------------------------------------------------------------------
+
+class FileReply final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:IPC.FileReply) */ {
+ public:
+  inline FileReply() : FileReply(nullptr) {}
+  ~FileReply() override;
+  explicit PROTOBUF_CONSTEXPR FileReply(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  FileReply(const FileReply& from);
+  FileReply(FileReply&& from) noexcept
+    : FileReply() {
+    *this = ::std::move(from);
+  }
+
+  inline FileReply& operator=(const FileReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline FileReply& operator=(FileReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const FileReply& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const FileReply* internal_default_instance() {
+    return reinterpret_cast<const FileReply*>(
+               &_FileReply_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(FileReply& a, FileReply& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(FileReply* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(FileReply* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  FileReply* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<FileReply>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const FileReply& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const FileReply& from) {
+    FileReply::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FileReply* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "IPC.FileReply";
+  }
+  protected:
+  explicit FileReply(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kBufferFieldNumber = 1,
+  };
+  // bytes buffer = 1;
+  void clear_buffer();
+  const std::string& buffer() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_buffer(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_buffer();
+  PROTOBUF_NODISCARD std::string* release_buffer();
+  void set_allocated_buffer(std::string* buffer);
+  private:
+  const std::string& _internal_buffer() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_buffer(const std::string& value);
+  std::string* _internal_mutable_buffer();
+  public:
+
+  // @@protoc_insertion_point(class_scope:IPC.FileReply)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr buffer_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_IPC_2eproto;
+};
 // ===================================================================
 
 
@@ -479,9 +636,65 @@ inline void IPCReply::set_allocated_body(std::string* body) {
   // @@protoc_insertion_point(field_set_allocated:IPC.IPCReply.body)
 }
 
+// -------------------------------------------------------------------
+
+// FileReply
+
+// bytes buffer = 1;
+inline void FileReply::clear_buffer() {
+  _impl_.buffer_.ClearToEmpty();
+}
+inline const std::string& FileReply::buffer() const {
+  // @@protoc_insertion_point(field_get:IPC.FileReply.buffer)
+  return _internal_buffer();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FileReply::set_buffer(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.buffer_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:IPC.FileReply.buffer)
+}
+inline std::string* FileReply::mutable_buffer() {
+  std::string* _s = _internal_mutable_buffer();
+  // @@protoc_insertion_point(field_mutable:IPC.FileReply.buffer)
+  return _s;
+}
+inline const std::string& FileReply::_internal_buffer() const {
+  return _impl_.buffer_.Get();
+}
+inline void FileReply::_internal_set_buffer(const std::string& value) {
+  
+  _impl_.buffer_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FileReply::_internal_mutable_buffer() {
+  
+  return _impl_.buffer_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FileReply::release_buffer() {
+  // @@protoc_insertion_point(field_release:IPC.FileReply.buffer)
+  return _impl_.buffer_.Release();
+}
+inline void FileReply::set_allocated_buffer(std::string* buffer) {
+  if (buffer != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.buffer_.SetAllocated(buffer, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.buffer_.IsDefault()) {
+    _impl_.buffer_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:IPC.FileReply.buffer)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 

@@ -7,6 +7,10 @@
 #include "IPC.grpc.pb.h"
 #include "nlohmann/json.hpp"
 #include <tuple>
+#include <iostream>
+#include <fstream>
+#include <QCoreApplication>
+#include <QDir>
 
 using namespace ZYP;
 using namespace std;
@@ -17,6 +21,7 @@ using grpc::Channel;
 using IPC::IPCSrv;
 using IPC::IPCRequest;
 using IPC::IPCReply;
+using IPC::FileReply;
 
 using nlohmann::json;
 
@@ -28,6 +33,8 @@ public:
 
 public:
     auto call(const json & ctx) -> tuple<json, bool>;
+    void streamCall(const json & ctx, function<void(const string &)> msgHandle);
+    auto recordDownload(const json & ctx) -> optional<string>;
 
 private:
     unique_ptr<IPCSrv::Stub> _stub;
