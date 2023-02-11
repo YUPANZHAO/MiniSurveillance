@@ -76,6 +76,9 @@ public:
     // 获取对讲的rtmp地址
     Q_INVOKABLE QString getTalkRtmpUrl();
 
+    // 获取录像文件
+    Q_INVOKABLE QString getRecordFile(int device_idx, QString begin_time, QString end_time);
+
 private:
     // 查找可用窗口，若无可以窗口，默认替换第一个
     int findWindow();

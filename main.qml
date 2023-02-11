@@ -116,7 +116,11 @@ function onListItemClicked(item) {
     if(btn_change_window.window_name == "surveillance") {
         mainctrl.playVideo(item.id)
     }else if(btn_change_window.window_name == "record") {
-
+        if(input_begin_time.length == 0 || input_end_time.length == 0) return;
+        let file = mainctrl.getRecordFile(item.id, input_begin_time.text, input_end_time.text)
+        if(file === "") return;
+        record_window.record_file_name = file
+        btn_play.clicked()
     }
 }
 
@@ -148,7 +152,7 @@ Rectangle {
                 width: list.width
                 height: 50
                 text: model.name
-                onClicked: mainWindow.onListItemClicked(model)
+                onClicked: onListItemClicked(model)
             }
 
             } } // end of Column { Row {
@@ -412,7 +416,7 @@ Button {
         }else if(window_name == "record") {
             window_name = "surveillance"
             text = "录像窗口"
-            record_ctrl.stop()
+            btn_stop.clicked()
             record_window.visible = false
         }
     }
@@ -432,6 +436,8 @@ Rectangle {
     y: 0
     color: "white"
 
+    property string record_file_name: ""
+
     Rectangle {
         id: record_surface
         width: parent.width
@@ -441,6 +447,62 @@ Rectangle {
             id: record_video_output
             source: record_ctrl.frameProvider
             anchors.fill: parent
+        }
+    }
+
+    Rectangle {
+        id: input_record_time_dlg
+        width: 700
+        height: 60
+        anchors.centerIn: record_surface
+        color: "white"
+
+        Text {
+            id: record_begin_time_text_hint
+            text: "开始时间"
+            font.pixelSize: input_begin_time.height / 2
+            color: "grey"
+            anchors.centerIn: input_begin_time
+        }
+
+        TextInput {
+            id: input_begin_time
+            width: parent.width / 2 - 10
+            height: parent.height
+            font.pixelSize: parent.height / 2
+            clip: true
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+            onTextChanged: {
+                if(text.length == 0) record_begin_time_text_hint.visible = true
+                else record_begin_time_text_hint.visible = false
+            }
+        }
+
+        Text {
+            id: record_end_time_text_hint
+            text: "结束时间"
+            font.pixelSize: input_end_time.height / 2
+            color: "grey"
+            anchors.centerIn: input_end_time
+        }
+
+        TextInput {
+            id: input_end_time
+            width: parent.width / 2 - 10
+            height: parent.height
+            anchors.left: input_begin_time.right
+            anchors.leftMargin: 20
+            font.pixelSize: parent.height / 2
+            clip: true
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+            onTextChanged: {
+                if(text.length == 0) record_end_time_text_hint.visible = true
+                else record_end_time_text_hint.visible = false
+            }
         }
     }
 
@@ -459,7 +521,9 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: (parent.width - btn_play.width - btn_stop.width - btn_pause.width - btn_step_sec_backward.width - btn_step_sec_forward.width - btn_step_backward_one_frame.width - btn_step_forward_one_frame.width - 120) / 2
             onClicked: {
-                record_ctrl.play("E://rtmp//gRpcServer//stream_records//1A2U52//1A2U52_2023_02_10_07_30_2023_02_10_07_31.flv")
+                if(record_window.record_file_name === "") return;
+                record_ctrl.play(record_window.record_file_name)
+                input_record_time_dlg.visible = false
             }
         }
 
@@ -473,6 +537,7 @@ Rectangle {
             height: btn_play.height
             onClicked: {
                 record_ctrl.stop()
+                input_record_time_dlg.visible = true
             }
         }
 

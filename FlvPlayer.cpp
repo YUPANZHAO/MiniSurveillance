@@ -76,7 +76,10 @@ void FlvPlayer::step_by_frame(int count) {
         if(type == TAG_TYPE::VIDEO && tag_data[1] == 0x01) count--;
     }
     if(cur_idx + TAG_HEADER_SIZE > total_bytes) {
-        move(-2, type);
+        while(true) {
+            move(-1, type);
+            if(type == TAG_TYPE::VIDEO) break;
+        }
     }
     // 当前帧正好是I帧，直接解码
     bool is_i_frame = move(0, type);

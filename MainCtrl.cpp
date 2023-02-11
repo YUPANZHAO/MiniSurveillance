@@ -5,13 +5,6 @@ MainCtrl::MainCtrl()
 , msg_cb_thread(nullptr) {
     rpc = make_unique<IPCClient>();
     startMessageCallBack();
-    auto ret = rpc->recordDownload({
-        { "key", "1A2U52" },
-        { "begin_time", "2023-2-6 13:22:05" },
-        { "end_time", "2023-2-6 14:00:00" }
-    });
-    if(ret == nullopt) debug("录像文件获取失败");
-    else debug("录像存放位置:", *ret);
 }
 
 MainCtrl::~MainCtrl() {
@@ -221,4 +214,21 @@ void MainCtrl::startMessageCallBack() {
 
 void MainCtrl::MessageHandle(const string & msg) {
     debug("receive msg:", msg);
+}
+
+QString MainCtrl::getRecordFile(int device_idx, QString begin_time, QString end_time) {
+    if(device_idx < 0 || device_idx >= devices.size()) return "";
+    // 获取设备
+    auto & device = devices[device_idx];
+
+    auto ret = rpc->recordDownload({
+        { "key", device.key },
+        { "begin_time", begin_time.toStdString() },
+        { "end_time", end_time.toStdString() }
+    });
+    if(ret == nullopt) {
+        debug("录像文件获取失败");
+        return "";
+    }
+    return (*ret).c_str();
 }
