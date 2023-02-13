@@ -101,6 +101,8 @@ private:
     string talk_rtmp_push_url;
     // 消息回调线程
     unique_ptr<std::thread> msg_cb_thread;
+    // 用户Token
+    string token;
 };
 
 #endif // MAINCTRL_H

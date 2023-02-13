@@ -4,15 +4,32 @@ MainCtrl::MainCtrl()
 : is_talking(false)
 , msg_cb_thread(nullptr) {
     rpc = make_unique<IPCClient>();
+    // ×¢²á£¬½ö½øÐÐ²âÊÔÓÃ
+    rpc->call({
+        { "method", "register" },
+        { "username", "client" },
+        { "password", "123456" }
+    });
+    auto [reply,ret] = rpc->call({
+        { "method", "login" },
+        { "username", "client" },
+        { "password", "123456" }
+    });
+    if(ret && reply.value("msg", "failure") == "success") {
+        debug("µÇÂ¼³É¹¦");
+        token = reply.value("token", "");
+    }else {
+        debug("µÇÂ¼Ê§°Ü");
+    }
     startMessageCallBack();
 }
 
 MainCtrl::~MainCtrl() {
-//    rpc->call({
-//        { "method", "device_quit" },
-//        { "id", "client" }
-//    });
-//    msg_cb_thread->join();
+    rpc->call({
+        { "method", "logout" },
+        { "token", token }
+    });
+    msg_cb_thread->join();
 }
 
 QString MainCtrl::getDeviceName(int idx) {
@@ -40,7 +57,7 @@ int MainCtrl::getDeivceIdxByWindowIdx(int idx) {
 int MainCtrl::addDevice(const QString & key) {
     auto [ctx, ret] = rpc->call({
         { "method", "get_device_info" },
-        { "user", "client" },
+        { "user", token },
         { "key", key.toStdString() }
     });
     if(!ret) {
@@ -204,7 +221,7 @@ void MainCtrl::startMessageCallBack() {
     msg_cb_thread = make_unique<std::thread>([this]() {
         this->rpc->streamCall({
             { "method", "message_callback" },
-            { "id", "client" }
+            { "id", this->token }
         },
         [this](const string & msg) {
             this->MessageHandle(msg);
