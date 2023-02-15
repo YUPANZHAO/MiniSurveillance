@@ -120,6 +120,7 @@ function onListItemClicked(item) {
         let file = mainctrl.getRecordFile(item.id, input_begin_time.text, input_end_time.text)
         if(file === "") return;
         record_window.record_file_name = file
+        record_window.record_encryption = mainctrl.getEncryption(item.id)
         btn_play.clicked()
     }
 }
@@ -437,6 +438,7 @@ Rectangle {
     color: "white"
 
     property string record_file_name: ""
+    property string record_encryption: ""
 
     Rectangle {
         id: record_surface
@@ -522,7 +524,7 @@ Rectangle {
             anchors.leftMargin: (parent.width - btn_play.width - btn_stop.width - btn_pause.width - btn_step_sec_backward.width - btn_step_sec_forward.width - btn_step_backward_one_frame.width - btn_step_forward_one_frame.width - 120) / 2
             onClicked: {
                 if(record_window.record_file_name === "") return;
-                record_ctrl.play(record_window.record_file_name)
+                record_ctrl.play(record_window.record_file_name, record_window.record_encryption)
                 input_record_time_dlg.visible = false
             }
         }

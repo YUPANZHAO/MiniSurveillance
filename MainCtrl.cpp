@@ -69,6 +69,7 @@ int MainCtrl::addDevice(const QString & key) {
     info.name = ctx.value("name", "未命名设备");
     info.key = key.toStdString();
     info.rtmp_url = ctx.value("rtmp_url", "");
+    info.encryption = ctx.value("encryption", "");
     info.is_active = true;
     info.is_playing = false;
     info.is_playing_audio = false;
@@ -102,7 +103,7 @@ int MainCtrl::playVideo(int device_idx) {
         stopVideo(windows[window_idx].device_idx);
     }
     // 播放视频
-    bool ret = windows[window_idx].video_ctrl->play(device.rtmp_url.c_str());
+    bool ret = windows[window_idx].video_ctrl->play(device.rtmp_url.c_str(), device.encryption.c_str());
     if(!ret) return -1;
     // 更新信息
     windows[window_idx].device_idx = device_idx;
@@ -248,4 +249,11 @@ QString MainCtrl::getRecordFile(int device_idx, QString begin_time, QString end_
         return "";
     }
     return (*ret).c_str();
+}
+
+QString MainCtrl::getEncryption(int device_idx) {
+    if(device_idx < 0 || device_idx >= devices.size()) return "";
+    // 获取设备
+    auto & device = devices[device_idx];
+    return device.encryption.c_str();
 }

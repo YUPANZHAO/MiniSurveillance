@@ -108,6 +108,7 @@ HEADERS += \
     include/AACDecoder.h \
     include/AudioChannel.h \
     include/CameraFilter.h \
+    include/Crypto.hpp \
     include/FFmpeg_Decoder.h \
     include/FlvPlayer.h \
     include/FrameProvider.h \

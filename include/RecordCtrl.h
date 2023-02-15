@@ -9,6 +9,7 @@
 #include "AACDecoder.h"
 #include <QAudioFormat>
 #include <QAudioOutput>
+#include "Crypto.hpp"
 
 using namespace  std;
 
@@ -23,7 +24,7 @@ public:
     FrameProvider* frameProvider();
     void setFrameProvider(FrameProvider* provider);
 
-    Q_INVOKABLE void play(const QString file_path);
+    Q_INVOKABLE void play(const QString file_path, const QString encryption);
     Q_INVOKABLE void stop();
     Q_INVOKABLE void pause();
     Q_INVOKABLE void step_by_second(int sec);
@@ -42,6 +43,8 @@ private:
 
     bool is_playing_audio;
     bool is_play_able;
+
+    string encryption;
 
     BYTE adts_header[7];
     QAudioFormat audioFormat;

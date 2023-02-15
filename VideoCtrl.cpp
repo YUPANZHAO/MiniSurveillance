@@ -17,11 +17,14 @@ VideoCtrl::VideoCtrl()
         if(type == NALU_TYPE_IDR) {
             BYTE nalu_header [] = { 0x00, 0x00, 0x01 };
             this->video_decoder->receiveData(nalu_header, 3);
+            if(this->encryption.length()) {
+                Crypto::decrypt((const uint8_t*)this->encryption.data(), this->encryption.length(), data, len);
+            }
         }else {
             BYTE nalu_header [] = { 0x00, 0x00, 0x00, 0x01 };
             this->video_decoder->receiveData(nalu_header, 4);
         }
-//        debug("type:", type, "len:", len);
+        debug("type:", type, "len:", len);
         this->video_decoder->receiveData(data, len);
     });
     // 获取音频数据
@@ -85,12 +88,14 @@ VideoCtrl::VideoCtrl()
 VideoCtrl::~VideoCtrl() {
 }
 
-bool VideoCtrl::play(const QString url) {
+bool VideoCtrl::play(const QString url, const QString encryption) {
     if(is_playing) return false;
     is_playing = true;
     is_playing_audio = false;
     // 设置流地址
     videoCapture->setRtmpURL(url.toStdString());
+    // 设置解密密钥
+    this->encryption = encryption.toStdString();
     // 开始拉流
     bool ret = videoCapture->start();
     if(!ret) {

@@ -20,6 +20,8 @@ struct DeviceInfo {
     string key;
     // RTMP流地址
     string rtmp_url;
+    // 解密密钥
+    string encryption;
     // 是否在线
     bool is_active;
     // 是否正在播放
@@ -78,6 +80,8 @@ public:
 
     // 获取录像文件
     Q_INVOKABLE QString getRecordFile(int device_idx, QString begin_time, QString end_time);
+    // 获取设备的解密密钥
+    Q_INVOKABLE QString getEncryption(int device_idx);
 
 private:
     // 查找可用窗口，若无可以窗口，默认替换第一个

@@ -11,6 +11,7 @@
 #include "AACDecoder.h"
 #include <QAudioFormat>
 #include <QAudioOutput>
+#include "Crypto.hpp"
 
 using namespace ZYP;
 using namespace std;
@@ -25,7 +26,7 @@ public:
     ~VideoCtrl();
 
 public:
-    Q_INVOKABLE bool play(const QString url);
+    Q_INVOKABLE bool play(const QString url, const QString encryption);
     Q_INVOKABLE void stop();
     Q_INVOKABLE void playAudio();
     Q_INVOKABLE void stopAudio();
@@ -50,6 +51,8 @@ private:
     QAudioFormat audioFormat;
     QAudioOutput* audio;
     QIODevice* audio_io;
+
+    string encryption;
 
 private:
     auto convertFormat(AVPixelFormat pix_fmt) -> QVideoFrame::PixelFormat;

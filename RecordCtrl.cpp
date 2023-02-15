@@ -4,7 +4,8 @@ RecordCtrl::RecordCtrl(QObject *parent)
 : QObject{parent}
 , frame(nullptr)
 , is_playing_audio(false)
-, audio(nullptr) {
+, audio(nullptr)
+, encryption("") {
     // ÐÅºÅ²Û°ó¶¨
     provider = make_unique<FrameProvider>();
     connect(this, &RecordCtrl::sendOneFrame, provider.get(), &FrameProvider::onNewFrameReceived);
@@ -17,6 +18,9 @@ RecordCtrl::RecordCtrl(QObject *parent)
         if(type == NALU_TYPE_IDR) {
             BYTE nalu_header [] = { 0x00, 0x00, 0x01 };
             this->h264_decoder->receiveData(nalu_header, 3);
+            if(this->encryption.length()) {
+                Crypto::decrypt((const uint8_t*)this->encryption.data(), this->encryption.length(), buf, len);
+            }
         }else {
             BYTE nalu_header [] = { 0x00, 0x00, 0x00, 0x01 };
             this->h264_decoder->receiveData(nalu_header, 4);
@@ -86,10 +90,11 @@ void RecordCtrl::setFrameProvider(FrameProvider* provider) {
 
 }
 
-void RecordCtrl::play(const QString file_path) {
+void RecordCtrl::play(const QString file_path, const QString encryption) {
     debug("play btn clicked", file_path.toStdString());
     flv_player->set_file_path(file_path.toStdString());
     is_playing_audio = true;
+    this->encryption = encryption.toStdString();
     flv_player->start();
 }
 
