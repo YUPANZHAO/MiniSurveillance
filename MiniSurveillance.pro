@@ -24,8 +24,8 @@ SOURCES += \
         VideoChannel.cpp \
         VideoCtrl.cpp \
         VideoSender.cpp \
-        main.cpp \
-        VideoCapture.cpp
+        VideoCapture.cpp \
+        main.cpp
 
 RESOURCES += qml.qrc
 

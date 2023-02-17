@@ -24,7 +24,6 @@ VideoCtrl::VideoCtrl()
             BYTE nalu_header [] = { 0x00, 0x00, 0x00, 0x01 };
             this->video_decoder->receiveData(nalu_header, 4);
         }
-        debug("type:", type, "len:", len);
         this->video_decoder->receiveData(data, len);
     });
     // 获取音频数据

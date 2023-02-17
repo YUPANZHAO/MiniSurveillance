@@ -7,6 +7,7 @@
 #include "VideoSender.h"
 #include "MainCtrl.h"
 #include "RecordCtrl.h"
+#include <QIcon>
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<MainCtrl>("MainCtrl", 1, 0, "MainCtrl");
     qmlRegisterType<RecordCtrl>("RecordCtrl", 1, 0, "RecordCtrl");
 
+    app.setWindowIcon(QIcon(":/skins/default/icon.png"));
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -108,17 +108,20 @@ void FlvPlayer::step_by_frame(int count) {
 }
 
 void FlvPlayer::step_one_frame_forward() {
+    if(!is_playing) return;
     is_pause = true;
     step_one_frame = true;
 }
 
 void FlvPlayer::step_one_frame_backward() {
+    if(!is_playing) return;
     is_pause = true;
     step_by_frame(-1);
     step_one_frame = true;
 }
 
 void FlvPlayer::step_by_seconds(int sec) {
+    if(!is_playing) return;
     is_pause = true;
     thread step_thread([this, sec]() {
         this->step_by_frame(sec * fps);

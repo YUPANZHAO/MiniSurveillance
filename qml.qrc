@@ -1,5 +1,16 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>skins/default/avatar.png</file>
+        <file>skins/default/download.png</file>
+        <file>skins/default/fast_backward.png</file>
+        <file>skins/default/fast_forward.png</file>
+        <file>skins/default/one_backward.png</file>
+        <file>skins/default/one_forward.png</file>
+        <file>skins/default/pause.png</file>
+        <file>skins/default/play.png</file>
+        <file>skins/default/stop.png</file>
+        <file>skins/default/voice.png</file>
+        <file>skins/default/icon.png</file>
     </qresource>
 </RCC>
