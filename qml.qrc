@@ -12,5 +12,9 @@
         <file>skins/default/stop.png</file>
         <file>skins/default/voice.png</file>
         <file>skins/default/icon.png</file>
+        <file>skins/default/Close.png</file>
+        <file>skins/default/Maximize_1.png</file>
+        <file>skins/default/Maximize_2.png</file>
+        <file>skins/default/Minimize.png</file>
     </qresource>
 </RCC>
