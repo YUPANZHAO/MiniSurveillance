@@ -16,5 +16,8 @@
         <file>skins/default/Maximize_1.png</file>
         <file>skins/default/Maximize_2.png</file>
         <file>skins/default/Minimize.png</file>
+        <file>skins/default/alarm.png</file>
+        <file>skins/default/info.png</file>
+        <file>skins/default/success.png</file>
     </qresource>
 </RCC>

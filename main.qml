@@ -1403,6 +1403,116 @@ Window {
             }
         }
 
+        // 信息弹窗控件
+        ListView {
+            id: message_box_list
+            width: 300
+            height: 220
+            anchors.horizontalCenter: surveillance_window.horizontalCenter
+            anchors.top: title_bar.bottom
+            anchors.topMargin: 10
+            model: message_box_list_model
+            delegate: message_box_list_delegate
+            clip: true
+
+            ListModel {
+                id: message_box_list_model
+            }
+
+            Component {
+                id: message_box_list_delegate
+                Column { Row { // 绘制列表的单个Item
+
+                Rectangle {
+                    width: message_box_list.width
+                    height: 55
+                    color: "#00000000"
+
+                    Rectangle {
+                        id: box
+                        width: message_box_list.width
+                        height: 50
+                        radius: 6
+                        color: {
+                            if(model.type === "info") return "#D9E1FF"
+                            else if(model.type === "success") return "#C6F3D7"
+                            else if(model.type === "error") return "#FFD8D2"
+                            return "#FFD8D2"
+                        }
+                    }
+
+                    Image {
+                        id: msg_icon
+                        width: box.height / 3
+                        height: width
+                        anchors.verticalCenter: box.verticalCenter
+                        anchors.left: box.left
+                        anchors.leftMargin: 20
+                        source: {
+                            if(model.type === "info") return "qrc:/skins/default/info.png"
+                            else if(model.type === "success") return "qrc:/skins/default/success.png"
+                            else if(model.type === "error") return "qrc:/skins/default/alarm.png"
+                            return "qrc:/skins/default/alarm.png"
+                        }
+                    }
+
+                    Text {
+                        id: msg_text
+                        text: model.msg
+                        anchors.verticalCenter: box.verticalCenter
+                        anchors.left: msg_icon.right
+                        anchors.leftMargin: 15
+                        anchors.right: box.right
+                        anchors.rightMargin: 20
+                        font.family: "等线"
+                        font.pixelSize: parent.height / 4
+                        color: "#272727"
+                        wrapMode: Text.WrapAnywhere
+                    }
+                }
+
+                } } // end of Column { Row {
+            }
+        }
+        Timer {
+            id: timer_delete_first_msg;
+            property int count: 0
+            interval: 3000;//设置定时器定时时间为500ms,默认1000ms
+            repeat: false //是否重复定时,默认为false
+            running: false //是否开启定时，默认是false，当为true的时候，进入此界面就开始定时
+            triggeredOnStart: false // 是否开启定时就触发onTriggered，一些特殊用户可以用来设置初始值。
+            onTriggered: {
+                //定时触发槽,定时完成一次就进入一次
+                while(count > 0) {
+                    message_box_list_model.remove(0)
+                    count--
+                }
+            }
+        }
+        function info(msg) {
+            message_box_list_model.append({
+                "type": "info",
+                "msg": msg
+            })
+            timer_delete_first_msg.count++
+            timer_delete_first_msg.start()
+        }
+        function success(msg) {
+            message_box_list_model.append({
+                "type": "success",
+                "msg": msg
+            })
+            timer_delete_first_msg.count++
+            timer_delete_first_msg.start()
+        }
+        function error(msg) {
+            message_box_list_model.append({
+                "type": "error",
+                "msg": msg
+            })
+            timer_delete_first_msg.count++
+            timer_delete_first_msg.start()
+        }
     }
 
     // 窗口阴影
