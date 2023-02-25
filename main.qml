@@ -63,22 +63,9 @@ Window {
                     }
                 }
                 hoverEnabled: true
-                onMouseXChanged: {
+                onPositionChanged: {
                     if(!parent.is_pressed) return
-                    if(root.visibility === Window.FullScreen && mouse.x !== pre_mouse_x) {
-                        root.visibility = Window.AutomaticVisibility
-                        console.log(mouse.x, mouse.y, root.x, root.y, root.width, root.height)
-                        root.x = mouse.x - root.width / 2
-                        root.y = mouse.y - title_bar.height / 2
-                        pre_mouse_x = mouse.x - root.x
-                        pre_mouse_y = mouse.y - root.y
-                        return
-                    }
-                    root.x += mouse.x - pre_mouse_x
-                }
-                onMouseYChanged: {
-                    if(!parent.is_pressed) return
-                    if(root.visibility === Window.FullScreen && mouse.y !== pre_mouse_y) {
+                    if(root.visibility === Window.FullScreen && (mouse.y !== pre_mouse_y || mouse.x !== pre_mouse_x)) {
                         root.visibility = Window.AutomaticVisibility
                         root.x = mouse.x - root.width / 2
                         root.y = mouse.y - title_bar.height / 2
@@ -86,8 +73,10 @@ Window {
                         pre_mouse_y = mouse.y - root.y
                         return
                     }
-                    root.y += mouse.y - pre_mouse_y
+                    root.x = mousePosition.cursorPos().x - pre_mouse_x - 15
+                    root.y = mousePosition.cursorPos().y - pre_mouse_y - 15
                 }
+
                 onDoubleClicked: root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen
             }
 
