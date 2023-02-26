@@ -380,6 +380,7 @@ Window {
                     Rectangle {
                         width: device_list.width
                         height: 55
+                        color: "#e9ebee"
 
                         Rectangle {
                             id: device_btn
@@ -427,7 +428,7 @@ Window {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    onListItemClicked(model)
+                                    mainWindow.onListItemClicked(model)
                                 }
                                 onPressed: {
                                     parent.color = "#0A000000"
@@ -1332,7 +1333,7 @@ Window {
                         mainctrl.stopTalk(rclick_menu.window_idx)
                         sender.stop()
                         camera.stop()
-                        updateTalkWindowPos(rclick_menu.window_idx);
+                        mainWindow.updateTalkWindowPos(rclick_menu.window_idx);
                         talk_videoOutput.visible = false
                     }else {
                         let ret = mainctrl.startTalk(rclick_menu.window_idx)
@@ -1345,7 +1346,7 @@ Window {
                         sender.push();
                         sender.openAudio()
                         camera.start()
-                        updateTalkWindowPos(rclick_menu.window_idx);
+                        mainWindow.updateTalkWindowPos(rclick_menu.window_idx);
                         talk_videoOutput.visible = true
                     }
                 }
