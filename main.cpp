@@ -13,7 +13,7 @@
 
 int main(int argc, char *argv[])
 {
-    // ³õÊ¼»¯ÍøÂç»·¾³
+    // åˆå§‹åŒ–ç½‘ç»œç¯å¢ƒ
     WORD version;
     WSADATA wsaData;
     version = MAKEWORD(1, 1);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
     int ret = app.exec();
 
-    // ÇåÀíÍøÂç»·¾³
+    // æ¸…ç†ç½‘ç»œç¯å¢ƒ
     WSACleanup();
 
     return ret;

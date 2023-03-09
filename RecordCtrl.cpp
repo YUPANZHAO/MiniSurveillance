@@ -6,10 +6,10 @@ RecordCtrl::RecordCtrl(QObject *parent)
 , is_playing_audio(false)
 , audio(nullptr)
 , encryption("") {
-    // ĞÅºÅ²Û°ó¶¨
+    // ä¿¡å·æ§½ç»‘å®š
     provider = make_unique<FrameProvider>();
     connect(this, &RecordCtrl::sendOneFrame, provider.get(), &FrameProvider::onNewFrameReceived);
-    // ÉèÖÃÂ¼Ïñ½âÂëÁ÷³Ì
+    // è®¾ç½®å½•åƒè§£ç æµç¨‹
     flv_player = make_unique<FlvPlayer>();
     h264_decoder = make_unique<H264Decoder>();
     aac_decoder = make_unique<AACDecoder>();
@@ -40,7 +40,7 @@ RecordCtrl::RecordCtrl(QObject *parent)
             temp[2] |= ((channelsIdx & 0x4) >> 2) & 0x1;
             temp[3] |= ((channelsIdx & 0x3) << 6) & 0xC0;
             memcpy(this->adts_header, temp, 7);
-            // ³õÊ¼»¯²¥·ÅÆ÷
+            // åˆå§‹åŒ–æ’­æ”¾å™¨
             this->audioFormat.setSampleRate(sampleIdx == 4 ? 44100 : 8000);
             this->audioFormat.setSampleSize(32);
             this->audioFormat.setChannelCount(channelsIdx == 1 ? 1 : 2);

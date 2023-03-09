@@ -81,13 +81,13 @@ void FlvPlayer::step_by_frame(int count) {
             if(type == TAG_TYPE::VIDEO) break;
         }
     }
-    // µ±Ç°Ö¡ÕıºÃÊÇIÖ¡£¬Ö±½Ó½âÂë
+    // å½“å‰å¸§æ­£å¥½æ˜¯Iå¸§ï¼Œç›´æ¥è§£ç 
     bool is_i_frame = move(0, type);
     if(type == TAG_TYPE::VIDEO && is_i_frame) {
         is_regulating = false;
         return;
     }
-    // µ±Ç°Ö¡ÊÇPÖ¡£¬ÕÒµ½µ±Ç°ÊÓÆµÖ¡Ç°µÄµÚÒ»¸öIÖ¡£¬½»ÓÉ½âÂëÏß³Ì½âÂëµ½µ±Ç°Ö¡
+    // å½“å‰å¸§æ˜¯På¸§ï¼Œæ‰¾åˆ°å½“å‰è§†é¢‘å¸§å‰çš„ç¬¬ä¸€ä¸ªIå¸§ï¼Œäº¤ç”±è§£ç çº¿ç¨‹è§£ç åˆ°å½“å‰å¸§
     regulate_tag_count = 0;
     while(true) {
         if(cur_idx == FLV_HEADER_LENGTH + 4) {
@@ -99,7 +99,7 @@ void FlvPlayer::step_by_frame(int count) {
         }
         if(is_i_frame) break;
     }
-    // ÈôÕÒ²»µ½IÖ¡£¬ÔòÌøµ½ºóÃæµÄµÚÒ»¸öIÖ¡
+    // è‹¥æ‰¾ä¸åˆ°Iå¸§ï¼Œåˆ™è·³åˆ°åé¢çš„ç¬¬ä¸€ä¸ªIå¸§
     if(!is_i_frame) {
         need_I_frame = true;
         is_regulating = false;

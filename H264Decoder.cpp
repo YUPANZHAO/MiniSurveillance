@@ -22,7 +22,7 @@ void H264Decoder::handleOneFrame(AVFrame* frame) {
     UINT32 width = frame->width;
     UINT32 height = frame->height;
     UINT32 fps = codec_ctx->framerate.num;
-//    debug("���һ֡", width, height);
+//    debug("获得一帧", width, height);
     int ysize = width * height;
     int uvsize = ysize >> 2;
     int bufsize = ysize + (uvsize << 1);

@@ -1266,22 +1266,383 @@ Window {
             }
         }
 
-        // 对讲画面
-        VideoOutput {
-            id: talk_videoOutput
-            width: surface1.width * 0.3
-            height: width * 9 / 16
-            source: camera
-            visible: false
+        // 登录注册窗口
+        Rectangle {
+            id: login_or_register_window
+            height: parent.height - title_bar.height
+            anchors.top: title_bar.bottom
+            anchors.left: spacer_1.right
+            anchors.right: parent.right
+            property string window_name: "登录注册窗口"
+            visible: windows_option.current_window_name == window_name || !logined ? true : false
+            color: "#f4f4f6"
+            z: 2
 
             MouseArea {
+                propagateComposedEvents: parent.logined
                 anchors.fill: parent
-                drag.target: talk_videoOutput
-                drag.minimumX: 0
-                drag.minimumY: 0
-                drag.maximumX: mainWindow.width - talk_videoOutput.width
-                drag.maximumY: mainWindow.height - talk_videoOutput.height
+                onClicked: {
+                    forceActiveFocus()
+                    mouse.accepted = false
+                }
             }
+
+            property bool logined: false
+
+            // 登录窗口
+            Rectangle {
+                id: lrwindow
+                height: 480
+                width: 380
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.leftMargin: (parent.width - width) * 0.8
+                radius: 20
+                color: "#f4f4f6"
+
+                property bool isLoginWindow: true
+                property int anim_speed: 300
+
+                NumberAnimation on anchors.leftMargin {
+                    id: login_window_animation
+                    to: 0
+                    duration: lrwindow.anim_speed
+                    easing.overshoot: Easing.InOutBack
+
+                    Component.onCompleted: {
+                        stop()
+                    }
+                }
+
+                function changeWindowStatu() {
+                    lrwindow.isLoginWindow = !lrwindow.isLoginWindow
+                    login_window_animation.to = (login_or_register_window.width - lrwindow.width) * (lrwindow.isLoginWindow ? 0.8 : 0.2)
+                    lr_btn_push_animation.to = lrwindow.isLoginWindow ? 20 : 90
+                    lr_check_password_input_animation.to = lrwindow.isLoginWindow ? 0 : 100
+                    lr_check_password_input_impl.text = ""
+                    login_window_animation.restart()
+                    lr_btn_push_animation.restart()
+                    lr_check_password_input_animation.restart()
+                }
+
+                function do_login() {
+                    if(lr_username_input_impl.length === 0
+                    || lr_password_input_impl.length === 0) {
+                        mainWindow.error("用户名或密码不能为空")
+                        return
+                    }
+
+                    let ret = mainctrl.login_user(lr_username_input_impl.text,
+                                        lr_password_input_impl.text)
+
+                    if(ret === "登录成功") {
+                        mainWindow.success("登录成功")
+                        login_or_register_window.logined = true
+                        username.text = lr_username_input_impl.text
+                        return
+                    }
+
+                    mainWindow.error(ret)
+                }
+
+                function do_register() {
+                    if(lr_username_input_impl.length === 0
+                    || lr_password_input_impl.length === 0
+                    || lr_check_password_input_impl.length === 0) {
+                        mainWindow.error("用户名或密码不能为空")
+                        return
+                    }
+
+                    if(lr_password_input_impl.text !==
+                            lr_check_password_input_impl.text) {
+                        mainWindow.error("密码不一致")
+                        return
+                    }
+
+                    let ret = mainctrl.register_user(lr_username_input_impl.text,
+                                        lr_password_input_impl.text)
+
+                    if(ret === "注册成功") {
+                        mainWindow.success("注册成功")
+                        return
+                    }
+
+                    mainWindow.error(ret)
+                }
+
+                Label {
+                    id: lr_window_label
+                    text: lrwindow.isLoginWindow ? "登录" : "注册"
+                    font.bold: true
+                    font.family: "黑体"
+                    font.pointSize: 15
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.topMargin: 60
+                    anchors.leftMargin: 30
+                }
+
+                Rectangle {
+                    id: lr_username_input
+                    width: parent.width - 60
+                    height: 50
+                    radius: 10
+                    border.color: "#1F000000"
+                    border.width: 2
+                    anchors.top: lr_window_label.bottom
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.leftMargin: 30
+
+                    Text {
+                        text: "请输入用户名"
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        color: "#4F000000"
+                        visible: lr_username_input_impl.length == 0 ? true : false
+                    }
+
+                    TextInput {
+                        id: lr_username_input_impl
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        clip: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            lr_username_input_impl.forceActiveFocus()
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: lr_password_input
+                    width: parent.width - 60
+                    height: 50
+                    radius: 10
+                    border.color: "#1F000000"
+                    border.width: 2
+                    anchors.top: lr_username_input.bottom
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.leftMargin: 30
+
+                    Text {
+                        text: "请输入密码"
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        color: "#4F000000"
+                        visible: lr_password_input_impl.length == 0 ? true : false
+                    }
+
+                    TextInput {
+                        id: lr_password_input_impl
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 17
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.5
+                        clip: true
+                        echoMode: TextInput.Password
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            lr_password_input_impl.forceActiveFocus()
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: lr_check_password_input
+                    width: parent.width - 60
+                    height: 50
+                    radius: 10
+                    border.color: "#1F000000"
+                    border.width: 2
+                    anchors.top: lr_password_input.bottom
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.leftMargin: 30
+                    opacity: 0
+
+                    Text {
+                        text: "确认密码"
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        color: "#4F000000"
+                        visible: lr_check_password_input_impl.length == 0 ? true : false
+                    }
+
+                    TextInput {
+                        id: lr_check_password_input_impl
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 17
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.5
+                        clip: true
+                        echoMode: TextInput.Password
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            lr_check_password_input_impl.forceActiveFocus()
+                        }
+                    }
+
+                    NumberAnimation on opacity {
+                        id: lr_check_password_input_animation
+                        to: 0
+                        duration: lrwindow.anim_speed
+                        easing.overshoot: Easing.InOutBack
+                        Component.onCompleted: {
+                            stop();
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: lr_btn_push
+                    width: parent.width - 60
+                    height: 50
+                    radius: 10
+                    anchors.top: lr_password_input.bottom
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.leftMargin: 30
+                    color: lr_btn_push_mouse_area.containsMouse ? "#097ff9" : "#429efd"
+                    z: 3
+
+                    NumberAnimation on anchors.topMargin {
+                        id: lr_btn_push_animation
+                        to: 20
+                        duration: lrwindow.anim_speed
+                        easing.overshoot: Easing.InOutBack
+                        Component.onCompleted: {
+                            stop();
+                        }
+                    }
+
+                    MouseArea {
+                        id: lr_btn_push_mouse_area
+                        anchors.fill: parent
+                        onClicked:  {
+                            if(lrwindow.isLoginWindow) lrwindow.do_login()
+                            else lrwindow.do_register()
+                        }
+                        hoverEnabled: true
+                    }
+
+                    Text {
+                        text: lrwindow.isLoginWindow ? "登 录" : "注 册"
+                        color: "#f4f4f6"
+                        font.pointSize: 14
+                        font.family: "等线"
+                        anchors.centerIn: parent
+                    }
+                }
+
+                Image {
+                    id: conner_change_btn
+                    source: conner_change_btn_mouse_area.containsMouse &&
+                            conner_change_btn_mouse_area.mouseX + 13 >= conner_change_btn_mouse_area.mouseY
+                            ? "qrc:/skins/default/conner_dep.png" : "qrc:/skins/default/conner.png"
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: -13
+                    anchors.rightMargin: -13
+                    width: 100
+                    height: 100
+
+                    MouseArea {
+                        id: conner_change_btn_mouse_area
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            if(conner_change_btn_mouse_area.containsMouse
+                            && conner_change_btn_mouse_area.mouseX + 13 >= conner_change_btn_mouse_area.mouseY) {
+                                lrwindow.changeWindowStatu()
+                            }
+                        }
+                    }
+                }
+
+                Image {
+                    id: lr_conner_text
+                    width: 80
+                    height: 40
+                    source: lrwindow.isLoginWindow ? "qrc:/skins/default/register.png" : "qrc:/skins/default/login.png"
+                    anchors.top: parent.top
+                    anchors.topMargin: 15
+                    anchors.right: parent.right
+                    anchors.rightMargin: -5
+                    rotation: 45
+                }
+
+                Text {
+                    id: lr_window_rule
+                    text: "规则: 用户名为全英文、密码为6-15为数字、英文或字符'$、#、.、%、!、@'"
+                    width: parent.width - 60
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 20
+                    anchors.left: parent.left
+                    anchors.leftMargin: 30
+                    anchors.right: parent.right
+                    anchors.rightMargin: 30
+                    wrapMode: Text.WrapAnywhere
+                    font.family: "微软雅黑"
+                    font.pointSize: 10
+                    color: "#4F000000"
+                }
+            }
+
+            // 窗口阴影
+            DropShadow {
+                anchors.fill: lrwindow
+                horizontalOffset: 0
+                verticalOffset: 0
+                radius: 20
+                samples: 20
+                source: lrwindow
+                color: "#24000000"
+                Behavior on radius { PropertyAnimation { duration: 100 } }
+            }
+
         }
 
         // 主控控件
@@ -1415,6 +1776,16 @@ Window {
             model: message_box_list_model
             delegate: message_box_list_delegate
             clip: true
+            z: 2
+
+            MouseArea {
+                propagateComposedEvents: true
+                anchors.fill: parent
+                onClicked: {
+                    forceActiveFocus()
+                    mouse.accepted = false
+                }
+            }
 
             ListModel {
                 id: message_box_list_model
@@ -1513,6 +1884,25 @@ Window {
             })
             timer_delete_first_msg.count++
             timer_delete_first_msg.start()
+        }
+
+        // 对讲画面
+        VideoOutput {
+            id: talk_videoOutput
+            width: surface1.width * 0.3
+            height: width * 9 / 16
+            source: camera
+            visible: false
+            z: 2
+
+            MouseArea {
+                anchors.fill: parent
+                drag.target: talk_videoOutput
+                drag.minimumX: 0
+                drag.minimumY: 0
+                drag.maximumX: mainWindow.width - talk_videoOutput.width
+                drag.maximumY: mainWindow.height - talk_videoOutput.height
+            }
         }
     }
 

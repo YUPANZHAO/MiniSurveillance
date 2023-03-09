@@ -10,9 +10,9 @@ VideoCtrl::VideoCtrl()
 , is_playing_audio(false)
 , audio(nullptr)
 , audio_io(nullptr) {
-    // ÐÅºÅ²Û°ó¶¨
+    // ä¿¡å·æ§½ç»‘å®š
     connect(this, &VideoCtrl::sendOneFrame, provider.get(), &FrameProvider::onNewFrameReceived);
-    // RTMPÀ­Á÷£¬»ñÈ¡Naluµ¥Ôª
+    // RTMPæ‹‰æµï¼ŒèŽ·å–Naluå•å…ƒ
     videoCapture->setNaluCB([this](NALU_TYPE type, BYTE* data, UINT32 len) {
         if(type == NALU_TYPE_IDR) {
             BYTE nalu_header [] = { 0x00, 0x00, 0x01 };
@@ -26,7 +26,7 @@ VideoCtrl::VideoCtrl()
         }
         this->video_decoder->receiveData(data, len);
     });
-    // »ñÈ¡ÒôÆµÊý¾Ý
+    // èŽ·å–éŸ³é¢‘æ•°æ®
     videoCapture->setAudioCB([this](AUDIO_TYPE type, AUDIO_CHANNEL_TYPE channelCfg, BYTE* data, UINT32 len) {
 //        debug("audio data, type:", type, "channelCfg:", channelCfg, "len:", len);
         if(type == AUDIO_INFO) {
@@ -40,7 +40,7 @@ VideoCtrl::VideoCtrl()
             temp[2] |= ((channelsIdx & 0x4) >> 2) & 0x1;
             temp[3] |= ((channelsIdx & 0x3) << 6) & 0xC0;
             memcpy(adts_header, temp, 7);
-            // ³õÊ¼»¯²¥·ÅÆ÷
+            // åˆå§‹åŒ–æ’­æ”¾å™¨
             audioFormat.setSampleRate(sampleIdx == 4 ? 44100 : 8000);
             audioFormat.setSampleSize(32);
             audioFormat.setChannelCount(channelsIdx == 1 ? 1 : 2);
@@ -65,7 +65,7 @@ VideoCtrl::VideoCtrl()
             this->audio_decoder->receiveData(data, len);
         }
     });
-    // H264 ½âÂë£¬»ñÈ¡Ö¡Ô­Ê¼Êý¾Ý
+    // H264 è§£ç ï¼ŒèŽ·å–å¸§åŽŸå§‹æ•°æ®
     video_decoder->setFrameCallBack([this](BYTE* data, UINT32 len, UINT32 width, UINT32 height, UINT32 fps, AVPixelFormat pix_fmt) {
         if(!frame) {
             frame = make_unique<QVideoFrame>(len, QSize(width, height), width, convertFormat(pix_fmt));
@@ -76,9 +76,9 @@ VideoCtrl::VideoCtrl()
             emit this->sendOneFrame(*frame.get());
         }
     });
-    // AAC ½âÂë£¬»ñÈ¡ PCM Êý¾Ý
+    // AAC è§£ç ï¼ŒèŽ·å– PCM æ•°æ®
     audio_decoder->setPCMCallBack([this](BYTE* data, UINT32 len) {
-//        debug("»ñÈ¡µ½Ò»Ö¡PCM, len:", len);
+//        debug("èŽ·å–åˆ°ä¸€å¸§PCM, len:", len);
         if(audio)
             audio_io->write((const char*)data, len);
     });
@@ -91,11 +91,11 @@ bool VideoCtrl::play(const QString url, const QString encryption) {
     if(is_playing) return false;
     is_playing = true;
     is_playing_audio = false;
-    // ÉèÖÃÁ÷µØÖ·
+    // è®¾ç½®æµåœ°å€
     videoCapture->setRtmpURL(url.toStdString());
-    // ÉèÖÃ½âÃÜÃÜÔ¿
+    // è®¾ç½®è§£å¯†å¯†é’¥
     this->encryption = encryption.toStdString();
-    // ¿ªÊ¼À­Á÷
+    // å¼€å§‹æ‹‰æµ
     bool ret = videoCapture->start();
     if(!ret) {
         is_playing = false;

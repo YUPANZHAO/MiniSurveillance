@@ -32,19 +32,19 @@ bool VideoCapture::start() {
     is_pulling = true;
 
     p_rtmp_pull_thread = make_shared<thread>([this]() {
-        debug("×¼±¸Á¬½ÓÁ÷µØÖ·", this->rtmp_url);
+        debug("å‡†å¤‡è¿æ¥æµåœ°å€", this->rtmp_url);
         if(!this->init()) {
-            debug("³õÊ¼»¯RTMPÊ§°Ü");
+            debug("åˆå§‹åŒ–RTMPå¤±è´¥");
             is_pulling = false;
             return;
         }
 
-        debug("¿ªÊ¼À­Á÷");
+        debug("å¼€å§‹æ‹‰æµ");
         this->pull();
-        debug("À­Á÷Í£Ö¹");
+        debug("æ‹‰æµåœæ­¢");
         this->unInit();
 
-        debug("À­Á÷Ïß³Ì½áÊø");
+        debug("æ‹‰æµçº¿ç¨‹ç»“æŸ");
         is_pulling = false;
     });
 

@@ -4,24 +4,6 @@ MainCtrl::MainCtrl()
 : is_talking(false)
 , msg_cb_thread(nullptr) {
     rpc = make_unique<IPCClient>();
-    // ×¢²á£¬½ö½øĞĞ²âÊÔÓÃ
-    rpc->call({
-        { "method", "register" },
-        { "username", "client" },
-        { "password", "123456" }
-    });
-    auto [reply,ret] = rpc->call({
-        { "method", "login" },
-        { "username", "client" },
-        { "password", "123456" }
-    });
-    if(ret && reply.value("msg", "failure") == "success") {
-        debug("µÇÂ¼³É¹¦");
-        token = reply.value("token", "");
-    }else {
-        debug("µÇÂ¼Ê§°Ü");
-    }
-    startMessageCallBack();
 }
 
 MainCtrl::~MainCtrl() {
@@ -61,12 +43,12 @@ int MainCtrl::addDevice(const QString & key) {
         { "key", key.toStdString() }
     });
     if(!ret) {
-        debug("Ìí¼ÓÉè±¸Ê§°Ü");
+        debug("æ·»åŠ è®¾å¤‡å¤±è´¥");
         return -1;
     }
 
     DeviceInfo info;
-    info.name = ctx.value("name", "Î´ÃüÃûÉè±¸");
+    info.name = ctx.value("name", "æœªå‘½åè®¾å¤‡");
     info.key = key.toStdString();
     info.rtmp_url = ctx.value("rtmp_url", "");
     info.encryption = ctx.value("encryption", "");
@@ -90,22 +72,22 @@ int MainCtrl::addWindow(VideoCtrl* videoCtrl) {
 int MainCtrl::playVideo(int device_idx) {
     debug("playVideo", device_idx);
     if(device_idx < 0 || device_idx >= devices.size()) return -1;
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto device = devices[device_idx];
-    // Éè±¸²»ÔÚÏß»òÉè±¸ÕıÔÚ²¥·Å
+    // è®¾å¤‡ä¸åœ¨çº¿æˆ–è®¾å¤‡æ­£åœ¨æ’­æ”¾
     debug("device info:", device.is_active, device.is_playing, device.rtmp_url);
     if(!device.is_active || device.is_playing) return -1;
-    // »ñÈ¡´°¿ÚË÷Òı
+    // è·å–çª—å£ç´¢å¼•
     int window_idx = findWindow();
     if(window_idx == -1) return -1;
-    // ÊÓÆµÔÚ²¥·ÅÔòÍ£Ö¹¸²¸Ç
+    // è§†é¢‘åœ¨æ’­æ”¾åˆ™åœæ­¢è¦†ç›–
     if(windows[window_idx].is_playing) {
         stopVideo(windows[window_idx].device_idx);
     }
-    // ²¥·ÅÊÓÆµ
+    // æ’­æ”¾è§†é¢‘
     bool ret = windows[window_idx].video_ctrl->play(device.rtmp_url.c_str(), device.encryption.c_str());
     if(!ret) return -1;
-    // ¸üĞÂĞÅÏ¢
+    // æ›´æ–°ä¿¡æ¯
     windows[window_idx].device_idx = device_idx;
     windows[window_idx].is_playing = true;
     devices[device_idx].is_playing = true;
@@ -116,12 +98,12 @@ int MainCtrl::playVideo(int device_idx) {
 void MainCtrl::playAudio(int window_idx) {
     debug("playAudio", window_idx);
     if(window_idx < 0 || window_idx >= windows.size()) return;
-    // »ñÈ¡´°¿Ú
+    // è·å–çª—å£
     auto & window = windows[window_idx];
     if(window.device_idx < 0 || window.device_idx >= devices.size()) return;
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto & device = devices[window.device_idx];
-    // ¿ªÆôÒôÆµ
+    // å¼€å¯éŸ³é¢‘
     if(window.is_playing) {
         window.video_ctrl->playAudio();
         device.is_playing_audio = true;
@@ -131,14 +113,14 @@ void MainCtrl::playAudio(int window_idx) {
 void MainCtrl::stopVideo(int device_idx) {
     debug("stopVideo", device_idx);
     if(device_idx < 0 || device_idx >= devices.size()) return;
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto & device = devices[device_idx];
     if(device.window_idx < 0 || device.window_idx >= windows.size()) return;
-    // »ñÈ¡´°¿Ú
+    // è·å–çª—å£
     auto & window = windows[device.window_idx];
-    // ¹Ø±ÕÊÓÆµÒôÆµ
+    // å…³é—­è§†é¢‘éŸ³é¢‘
     window.video_ctrl->stop();
-    // ¸üĞÂĞÅÏ¢
+    // æ›´æ–°ä¿¡æ¯
     window.is_playing = false;
     window.device_idx = -1;
     device.is_playing = false;
@@ -148,12 +130,12 @@ void MainCtrl::stopVideo(int device_idx) {
 
 void MainCtrl::stopAudio(int window_idx) {
     if(window_idx < 0 || window_idx >= windows.size()) return;
-    // »ñÈ¡´°¿Ú
+    // è·å–çª—å£
     auto & window = windows[window_idx];
     if(window.device_idx < 0 || window.device_idx >= devices.size()) return;
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto & device = devices[window.device_idx];
-    // ¹Ø±ÕÒôÆµ
+    // å…³é—­éŸ³é¢‘
     if(window.is_playing) {
         window.video_ctrl->stopAudio();
     }
@@ -168,19 +150,19 @@ int MainCtrl::findWindow() {
         idx = i;
         break;
     }
-    debug("´°¿Úidx:", idx);
+    debug("çª—å£idx:", idx);
     return idx;
 }
 
 bool MainCtrl::startTalk(int window_idx) {
     if(is_talking) return false;
     if(window_idx < 0 || window_idx >= windows.size()) return false;
-    // »ñÈ¡´°¿Ú
+    // è·å–çª—å£
     auto & window = windows[window_idx];
     if(window.device_idx < 0 || window.device_idx >= devices.size()) return false;
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto & device = devices[window.device_idx];
-    // Í¨ÖªÁ¬½ÓÉè±¸
+    // é€šçŸ¥è¿æ¥è®¾å¤‡
     auto [ctx, ret] = rpc->call({
         { "method", "talk_ctrl" },
         { "ctrl_type", "start" },
@@ -189,7 +171,7 @@ bool MainCtrl::startTalk(int window_idx) {
     if(!ret) return false;
     string req_talk_ret = ctx.value("result", "");
     if(req_talk_ret != "success") {
-        debug("¶Ô½²¿ªÆôÊ§°Ü, err_msg:", ctx.value("err_msg", ""));
+        debug("å¯¹è®²å¼€å¯å¤±è´¥, err_msg:", ctx.value("err_msg", ""));
         return false;
     }
     talk_rtmp_push_url = ctx.value("rtmp_push_url", "");
@@ -200,12 +182,12 @@ bool MainCtrl::startTalk(int window_idx) {
 void MainCtrl::stopTalk(int window_idx) {
     if(!is_talking) return;
     if(window_idx < 0 || window_idx >= windows.size()) return;
-    // »ñÈ¡´°¿Ú
+    // è·å–çª—å£
     auto & window = windows[window_idx];
     if(window.device_idx < 0 || window.device_idx >= devices.size()) return;
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto & device = devices[window.device_idx];
-    // Í¨ÖªÁ¬½ÓÉè±¸
+    // é€šçŸ¥è¿æ¥è®¾å¤‡
     rpc->call({
         { "method", "talk_ctrl" },
         { "ctrl_type", "stop" },
@@ -236,7 +218,7 @@ void MainCtrl::MessageHandle(const string & msg) {
 
 QString MainCtrl::getRecordFile(int device_idx, QString begin_time, QString end_time) {
     if(device_idx < 0 || device_idx >= devices.size()) return "";
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto & device = devices[device_idx];
 
     auto ret = rpc->recordDownload({
@@ -245,7 +227,7 @@ QString MainCtrl::getRecordFile(int device_idx, QString begin_time, QString end_
         { "end_time", end_time.toStdString() }
     });
     if(ret == nullopt) {
-        debug("Â¼ÏñÎÄ¼ş»ñÈ¡Ê§°Ü");
+        debug("å½•åƒæ–‡ä»¶è·å–å¤±è´¥");
         return "";
     }
     return (*ret).c_str();
@@ -253,7 +235,33 @@ QString MainCtrl::getRecordFile(int device_idx, QString begin_time, QString end_
 
 QString MainCtrl::getEncryption(int device_idx) {
     if(device_idx < 0 || device_idx >= devices.size()) return "";
-    // »ñÈ¡Éè±¸
+    // è·å–è®¾å¤‡
     auto & device = devices[device_idx];
     return device.encryption.c_str();
+}
+
+QString MainCtrl::register_user(const QString & username, const QString & password) {
+    auto [reply,ret] = rpc->call({
+        { "method", "register" },
+        { "username", username.toStdString() },
+        { "password", password.toStdString() }
+    });
+    if(ret && reply.value("msg", "failure") == "success") {
+        return "æ³¨å†ŒæˆåŠŸ";
+    }
+    return reply.value("reason", "æ³¨å†Œå¤±è´¥").c_str();
+}
+
+QString MainCtrl::login_user(const QString & username, const QString & password) {
+    auto [reply,ret] = rpc->call({
+        { "method", "login" },
+        { "username", username.toStdString() },
+        { "password", password.toStdString() }
+    });
+    if(ret && reply.value("msg", "failure") == "success") {
+        token = reply.value("token", "");
+        if(!token.empty()) startMessageCallBack();
+        return token == "" ? "ç™»å½•å¤±è´¥" :  "ç™»å½•æˆåŠŸ";
+    }
+    return "ç™»å½•å¤±è´¥";
 }

@@ -19,5 +19,9 @@
         <file>skins/default/alarm.png</file>
         <file>skins/default/info.png</file>
         <file>skins/default/success.png</file>
+        <file>skins/default/conner.png</file>
+        <file>skins/default/login.png</file>
+        <file>skins/default/register.png</file>
+        <file>skins/default/conner_dep.png</file>
     </qresource>
 </RCC>

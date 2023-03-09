@@ -12,33 +12,33 @@
 using namespace ZYP;
 using namespace std;
 
-// Éè±¸ĞÅÏ¢
+// è®¾å¤‡ä¿¡æ¯
 struct DeviceInfo {
-    // Éè±¸Ãû³Æ
+    // è®¾å¤‡åç§°
     string name;
-    // Éè±¸×¢²áÂë
+    // è®¾å¤‡æ³¨å†Œç 
     string key;
-    // RTMPÁ÷µØÖ·
+    // RTMPæµåœ°å€
     string rtmp_url;
-    // ½âÃÜÃÜÔ¿
+    // è§£å¯†å¯†é’¥
     string encryption;
-    // ÊÇ·ñÔÚÏß
+    // æ˜¯å¦åœ¨çº¿
     bool is_active;
-    // ÊÇ·ñÕıÔÚ²¥·Å
+    // æ˜¯å¦æ­£åœ¨æ’­æ”¾
     bool is_playing;
-    // ÊÇ·ñÕıÔÚ²¥·ÅÒôÆµ
+    // æ˜¯å¦æ­£åœ¨æ’­æ”¾éŸ³é¢‘
     bool is_playing_audio;
-    // ²¥·ÅÕ¼ÓÃ´°¿ÚË÷ÒıÖµ
+    // æ’­æ”¾å ç”¨çª—å£ç´¢å¼•å€¼
     int window_idx;
 };
 
-// ²¥·Å´°¿ÚĞÅÏ¢
+// æ’­æ”¾çª—å£ä¿¡æ¯
 struct WindowInfo {
-    // ÊÇ·ñÕıÔÚ²¥·Å
+    // æ˜¯å¦æ­£åœ¨æ’­æ”¾
     bool is_playing;
-    // ²¥·ÅÉè±¸Ë÷ÒıÖµ
+    // æ’­æ”¾è®¾å¤‡ç´¢å¼•å€¼
     int device_idx;
-    // ²¥·ÅÆ÷¿ØÖÆ¾ä±ú
+    // æ’­æ”¾å™¨æ§åˆ¶å¥æŸ„
     VideoCtrl* video_ctrl;
 };
 
@@ -51,61 +51,66 @@ public:
     ~MainCtrl();
 
 public:
-    // »ñÈ¡Éè±¸ĞÅÏ¢
+    // è·å–è®¾å¤‡ä¿¡æ¯
     Q_INVOKABLE QString getDeviceName(int idx);
     Q_INVOKABLE bool getDeviceIsPlaying(int idx);
     Q_INVOKABLE bool getWindowIsPlayingAudio(int idx);
     Q_INVOKABLE int getDeivceIdxByWindowIdx(int idx);
 
-    // Í¨¹ıÉè±¸×¢²áÂëÌí¼ÓÉè±¸£¬·µ»ØÉè±¸Ë÷ÒıÖµ
+    // é€šè¿‡è®¾å¤‡æ³¨å†Œç æ·»åŠ è®¾å¤‡ï¼Œè¿”å›è®¾å¤‡ç´¢å¼•å€¼
     Q_INVOKABLE int addDevice(const QString & key);
-    // Ìí¼Ó²¥·Å´°¿Ú£¬·µ»Ø´°¿ÚË÷ÒıÖµ
+    // æ·»åŠ æ’­æ”¾çª—å£ï¼Œè¿”å›çª—å£ç´¢å¼•å€¼
     Q_INVOKABLE int addWindow(VideoCtrl* videoCtrl);
 
-    // ²¥·ÅÊÓÆµ£¬·µ»Ø¶ÔÓ¦µÄ´°¿ÚË÷ÒıÖµ£¬-1´ú±íÊ§°Ü
+    // æ’­æ”¾è§†é¢‘ï¼Œè¿”å›å¯¹åº”çš„çª—å£ç´¢å¼•å€¼ï¼Œ-1ä»£è¡¨å¤±è´¥
     Q_INVOKABLE int playVideo(int device_idx);
-    // ²¥·ÅÒôÆµ£¬²ÎÊıÎª playVideo µÄ·µ»ØÖµ£¬¼´´°¿ÚµÄË÷ÒıÖµ
+    // æ’­æ”¾éŸ³é¢‘ï¼Œå‚æ•°ä¸º playVideo çš„è¿”å›å€¼ï¼Œå³çª—å£çš„ç´¢å¼•å€¼
     Q_INVOKABLE void playAudio(int window_idx);
-    // ¹Ø±ÕÊÓÆµ£¬²ÎÊıÍ¬²¥·ÅÊÓÆµÒ»ÖÂ
+    // å…³é—­è§†é¢‘ï¼Œå‚æ•°åŒæ’­æ”¾è§†é¢‘ä¸€è‡´
     Q_INVOKABLE void stopVideo(int device_idx);
-    // ¹Ø±ÕÒôÆµ£¬²ÎÊıÍ¬²¥·ÅÒôÆµÒ»ÖÂ
+    // å…³é—­éŸ³é¢‘ï¼Œå‚æ•°åŒæ’­æ”¾éŸ³é¢‘ä¸€è‡´
     Q_INVOKABLE void stopAudio(int window_idx);
 
-    // ¿ªÆô¶Ô½²
+    // å¼€å¯å¯¹è®²
     Q_INVOKABLE bool startTalk(int window_idx);
-    // ¹Ø±Õ¶Ô½²
+    // å…³é—­å¯¹è®²
     Q_INVOKABLE void stopTalk(int window_idx);
-    // »ñÈ¡¶Ô½²µÄrtmpµØÖ·
+    // è·å–å¯¹è®²çš„rtmpåœ°å€
     Q_INVOKABLE QString getTalkRtmpUrl();
 
-    // »ñÈ¡Â¼ÏñÎÄ¼ş
+    // è·å–å½•åƒæ–‡ä»¶
     Q_INVOKABLE QString getRecordFile(int device_idx, QString begin_time, QString end_time);
-    // »ñÈ¡Éè±¸µÄ½âÃÜÃÜÔ¿
+    // è·å–è®¾å¤‡çš„è§£å¯†å¯†é’¥
     Q_INVOKABLE QString getEncryption(int device_idx);
 
+    // æ³¨å†Œ
+    Q_INVOKABLE QString register_user(const QString & username, const QString & password);
+    // ç™»å½•
+    Q_INVOKABLE QString login_user(const QString & username, const QString & password);
+
 private:
-    // ²éÕÒ¿ÉÓÃ´°¿Ú£¬ÈôÎŞ¿ÉÒÔ´°¿Ú£¬Ä¬ÈÏÌæ»»µÚÒ»¸ö
+    // æŸ¥æ‰¾å¯ç”¨çª—å£ï¼Œè‹¥æ— å¯ä»¥çª—å£ï¼Œé»˜è®¤æ›¿æ¢ç¬¬ä¸€ä¸ª
     int findWindow();
 
-    // ¿ªÆôÏûÏ¢»Øµ÷
+    // å¼€å¯æ¶ˆæ¯å›è°ƒ
     void startMessageCallBack();
-    // ÏûÏ¢»Øµ÷´¦Àíº¯Êı
+    // æ¶ˆæ¯å›è°ƒå¤„ç†å‡½æ•°
     void MessageHandle(const string & msg);
 
 private:
-    // ´æ´¢Éè±¸ĞÅÏ¢
+    // å­˜å‚¨è®¾å¤‡ä¿¡æ¯
     vector<DeviceInfo> devices;
-    // ´æ´¢²¥·ÅÆ÷ĞÅÏ¢¼°¿ØÖÆ¾ä±ú
+    // å­˜å‚¨æ’­æ”¾å™¨ä¿¡æ¯åŠæ§åˆ¶å¥æŸ„
     vector<WindowInfo> windows;
-    // RPCÇëÇóÀà
+    // RPCè¯·æ±‚ç±»
     unique_ptr<IPCClient> rpc;
-    // ÊÇ·ñÕıÔÚ¶Ô½²
+    // æ˜¯å¦æ­£åœ¨å¯¹è®²
     bool is_talking;
-    // ¶Ô½²µÄrtmpµØÖ·
+    // å¯¹è®²çš„rtmpåœ°å€
     string talk_rtmp_push_url;
-    // ÏûÏ¢»Øµ÷Ïß³Ì
+    // æ¶ˆæ¯å›è°ƒçº¿ç¨‹
     unique_ptr<std::thread> msg_cb_thread;
-    // ÓÃ»§Token
+    // ç”¨æˆ·Token
     string token;
 };
 

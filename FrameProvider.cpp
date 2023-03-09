@@ -42,12 +42,12 @@ void FrameProvider::setFormat(int width, int heigth, QVideoFrame::PixelFormat fo
 }
 
 void FrameProvider::onNewFrameReceived(const QVideoFrame & frame) {
-//    debug("»ñÈ¡µ½Ò»Ö¡Êı¾İ");
+//    debug("è·å–åˆ°ä¸€å¸§æ•°æ®");
     setFormat(frame.width(), frame.height(), frame.pixelFormat());
     if(_surface) {
-//        debug("present Ò»Ö¡Êı¾İ");
+//        debug("present ä¸€å¸§æ•°æ®");
         bool res = _surface->present(frame);
-//        debug("ÍÆËÍ½á¹û£º", res);
+//        debug("æ¨é€ç»“æœï¼š", res);
     }
 }
 

@@ -25,10 +25,10 @@ auto IPCClient::call(const json & ctx) -> tuple<json, bool> {
         if(code == 200) {
             return { re.value("reply", json()), true };
         }else {
-            debug("½Ó¿ÚÇëÇóÊ§°Ü!", reply.body());
+            debug("æ¥å£è¯·æ±‚å¤±è´¥!", reply.body());
         }
     }else {
-        debug("½Ó¿ÚÇëÇóÒì³£!", status.error_code(), status.error_message());
+        debug("æ¥å£è¯·æ±‚å¼‚å¸¸!", status.error_code(), status.error_message());
     }
 
     return { json(), false };
@@ -50,10 +50,10 @@ void IPCClient::streamCall(const json & ctx, function<void(const string &)> msgH
 
     Status stauts = reader->Finish();
     if(!stauts.ok()) {
-        debug("ÏûÏ¢»Øµ÷rpcÁ÷Òì³£!");
+        debug("æ¶ˆæ¯å›è°ƒrpcæµå¼‚å¸¸!");
     }
 
-    debug("ÏûÏ¢»Øµ÷½áÊø");
+    debug("æ¶ˆæ¯å›è°ƒç»“æŸ");
 }
 
 auto IPCClient::recordDownload(const json & ctx) -> optional<string> {
@@ -84,9 +84,9 @@ auto IPCClient::recordDownload(const json & ctx) -> optional<string> {
 
     Status stauts = reader->Finish();
     if(!stauts.ok()) {
-        debug("»ñÈ¡Â¼ÏñÎÄ¼şÒì³£!");
+        debug("è·å–å½•åƒæ–‡ä»¶å¼‚å¸¸!");
     }
 
-    debug("»ñÈ¡Â¼ÏñÎÄ¼ş½áÊø");
+    debug("è·å–å½•åƒæ–‡ä»¶ç»“æŸ");
     return save_path;
 }
