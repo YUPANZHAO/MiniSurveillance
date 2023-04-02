@@ -56,6 +56,7 @@ public:
     Q_INVOKABLE bool getDeviceIsPlaying(int idx);
     Q_INVOKABLE bool getWindowIsPlayingAudio(int idx);
     Q_INVOKABLE int getDeivceIdxByWindowIdx(int idx);
+    Q_INVOKABLE bool getDeviceIsActive(int idx);
 
     // 通过设备注册码添加设备，返回设备索引值
     Q_INVOKABLE int addDevice(const QString & key);

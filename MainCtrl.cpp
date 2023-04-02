@@ -36,6 +36,11 @@ int MainCtrl::getDeivceIdxByWindowIdx(int idx) {
     return windows[idx].device_idx;
 }
 
+bool MainCtrl::getDeviceIsActive(int idx) {
+    if(idx < 0 || idx >= devices.size()) return false;
+    return devices[idx].is_active;
+}
+
 int MainCtrl::addDevice(const QString & key) {
     auto [ctx, ret] = rpc->call({
         { "method", "get_device_info" },
@@ -52,7 +57,7 @@ int MainCtrl::addDevice(const QString & key) {
     info.key = key.toStdString();
     info.rtmp_url = ctx.value("rtmp_url", "");
     info.encryption = ctx.value("encryption", "");
-    info.is_active = true;
+    info.is_active = false;
     info.is_playing = false;
     info.is_playing_audio = false;
     info.window_idx = -1;
@@ -214,6 +219,23 @@ void MainCtrl::startMessageCallBack() {
 
 void MainCtrl::MessageHandle(const string & msg) {
     debug("receive msg:", msg);
+    json js_msg = json::parse(msg);
+    if(js_msg.value("reply", json()) != json()) {
+        json reply = js_msg.value("reply", json());
+        if(reply.value("operation", "") == "device status change") {
+            string device_id = reply.value("device_id", "");
+            string device_status = reply.value("device_status", "");
+            if(device_id != "" && device_status != "") {
+                for(auto & device : devices) {
+                    if(device.key == device_id) {
+                        device.is_active = device_status == "active" ? true : false;
+                        debug("changed", device_id, device_status);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 QString MainCtrl::getRecordFile(int device_idx, QString begin_time, QString end_time) {

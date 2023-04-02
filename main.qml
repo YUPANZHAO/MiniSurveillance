@@ -373,6 +373,31 @@ Window {
                     id: device_list_model
                 }
 
+                Timer {
+                    id: timer_handle_device_statu;
+                    interval: 500;//设置定时器定时时间为500ms,默认1000ms
+                    repeat: true //是否重复定时,默认为false
+                    running: true //是否开启定时，默认是false，当为true的时候，进入此界面就开始定时
+                    triggeredOnStart: true // 是否开启定时就触发onTriggered，一些特殊用户可以用来设置初始值。
+                    onTriggered: {
+                        //定时触发槽,定时完成一次就进入一次
+                        var rowCount = device_list_model.count;
+                        for(var i = 0;i < rowCount; i++) {
+                            var model = device_list_model.get(i);
+                            var is_active = mainctrl.getDeviceIsActive(i);
+                            if(model.is_active && !is_active) {
+                                mainctrl.stopVideo(model.idx);
+                                mainWindow.info("设备 "+model.device_name+" 掉线!");
+                            }else if(!model.is_active && is_active) {
+                                mainWindow.info("设备 "+model.device_name+" 上线!")
+                            }
+
+                            model.is_active = is_active;
+                            device_list_model.set(i, model);
+                        }
+                    }
+                }
+
                 Component {
                     id: device_list_delegate
                     Column { Row { // 绘制列表的单个Item
@@ -419,7 +444,7 @@ Window {
                                 width: 5
                                 height: 5
                                 radius: 2.5
-                                color: "green"
+                                color: model.is_active ? "green" : "red"
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.right: parent.right
                                 anchors.rightMargin: 15
@@ -1097,7 +1122,8 @@ Window {
                             device_list_model.append({
                                 "idx": device_idx,
                                 "key": text,
-                                "device_name": mainctrl.getDeviceName(device_idx)
+                                "device_name": mainctrl.getDeviceName(device_idx),
+                                "is_active": false,
                             });
                             text = ""
                         }
@@ -1754,7 +1780,11 @@ Window {
         // 设备列表单击事件
         function onListItemClicked(item) {
             if(windows_option.current_window_name === "监控窗口") {
-                mainctrl.playVideo(item.idx)
+                let ret = mainctrl.playVideo(item.idx);
+                if(ret === -1) {
+                    if(item.is_active === false) error("设备不在线!")
+                    else error("播放失败!");
+                }
             }else if(windows_option.current_window_name === "录像回放") {
                 if(input_begin_time.length === 0 || input_end_time.length === 0) return;
                 let file = mainctrl.getRecordFile(item.idx, input_begin_time.text, input_end_time.text)
