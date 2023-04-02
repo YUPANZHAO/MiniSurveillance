@@ -1365,6 +1365,25 @@ Window {
                         mainWindow.success("登录成功")
                         login_or_register_window.logined = true
                         username.text = lr_username_input_impl.text
+
+                        var device_list_str = mainctrl.getAllDeviceKey();
+                        console.log("key ============================", device_list_str);
+                        var device_list_json = JSON.parse(device_list_str);
+                        console.log("json:", device_list_json);
+                        for(var idx in device_list_json) {
+                            let device_idx = mainctrl.addDevice(device_list_json[idx]);
+                            if(device_idx !== -1) {
+                                device_list_model.append({
+                                    "idx": device_idx,
+                                    "key": device_list_json[idx],
+                                    "device_name": mainctrl.getDeviceName(device_idx),
+                                    "is_active": false,
+                                });
+                            }
+                        }
+                        console.log("end ============================");
+
+
                         return
                     }
 

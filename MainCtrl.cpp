@@ -41,6 +41,10 @@ bool MainCtrl::getDeviceIsActive(int idx) {
     return devices[idx].is_active;
 }
 
+QString MainCtrl::getAllDeviceKey() {
+    return init_device_list.c_str();
+}
+
 int MainCtrl::addDevice(const QString & key) {
     auto [ctx, ret] = rpc->call({
         { "method", "get_device_info" },
@@ -280,9 +284,14 @@ QString MainCtrl::login_user(const QString & username, const QString & password)
         { "username", username.toStdString() },
         { "password", password.toStdString() }
     });
+    debug("login reply:", reply.dump());
     if(ret && reply.value("msg", "failure") == "success") {
         token = reply.value("token", "");
-        if(!token.empty()) startMessageCallBack();
+        if(!token.empty()) {
+            startMessageCallBack();
+            auto device_list = reply.value("device_list", json::array());
+            init_device_list = device_list.dump();
+        }
         return token == "" ? "登录失败" :  "登录成功";
     }
     return "登录失败";

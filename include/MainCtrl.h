@@ -57,6 +57,7 @@ public:
     Q_INVOKABLE bool getWindowIsPlayingAudio(int idx);
     Q_INVOKABLE int getDeivceIdxByWindowIdx(int idx);
     Q_INVOKABLE bool getDeviceIsActive(int idx);
+    Q_INVOKABLE QString getAllDeviceKey();
 
     // 通过设备注册码添加设备，返回设备索引值
     Q_INVOKABLE int addDevice(const QString & key);
@@ -113,6 +114,8 @@ private:
     unique_ptr<std::thread> msg_cb_thread;
     // 用户Token
     string token;
+    // 用户初始化设备列表JSON数据
+    string init_device_list;
 };
 
 #endif // MAINCTRL_H
