@@ -12,6 +12,7 @@ SOURCES += \
         AACDecoder.cpp \
         AudioChannel.cpp \
         CameraFilter.cpp \
+        ConfigCtrl.cpp \
         CursorPosProvider.cpp \
         FFmpeg_Decoder.cpp \
         FlvPlayer.cpp \
@@ -109,6 +110,7 @@ HEADERS += \
     include/AACDecoder.h \
     include/AudioChannel.h \
     include/CameraFilter.h \
+    include/ConfigCtrl.h \
     include/Crypto.hpp \
     include/CursorPosProvider.h \
     include/FFmpeg_Decoder.h \

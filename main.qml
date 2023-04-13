@@ -11,6 +11,7 @@ import MainCtrl 1.0
 import RecordCtrl 1.0
 import QtGraphicalEffects 1.0
 import QtQuick.Dialogs 1.3
+import ConfigCtrl 1.0
 
 Window {
     id: root
@@ -1733,12 +1734,17 @@ Window {
             z: 2
 
             MouseArea {
-                propagateComposedEvents: parent.logined
                 anchors.fill: parent
                 onClicked: {
                     forceActiveFocus()
                     mouse.accepted = false
                 }
+            }
+
+            // 配置控件
+            ConfigCtrl {
+                id: config_ctrl
+                configFile: "./debug/config"
             }
 
             // 返回按钮
@@ -1823,6 +1829,7 @@ Window {
                         font.family: "等线"
                         font.pixelSize: height * 0.6
                         clip: true
+                        text: config_ctrl.getValue("server_ip")
                     }
 
                     MouseArea {
@@ -1879,6 +1886,7 @@ Window {
                         font.family: "等线"
                         font.pixelSize: height * 0.6
                         clip: true
+                        text: config_ctrl.getValue("server_port")
                     }
 
                     MouseArea {
@@ -1903,7 +1911,7 @@ Window {
                 }
                 CheckBox {
                     id: file_record_enable_checkbox
-                    checked: true
+                    checked: config_ctrl.getValue("local_record_enable") === "1" ? true : false
                     width: 20
                     height: 20
                     anchors.top: file_record_enable_label.bottom
@@ -1957,6 +1965,7 @@ Window {
                         font.family: "等线"
                         font.pixelSize: height * 0.6
                         clip: true
+                        text: config_ctrl.getValue("local_record_max_save_time")
                     }
 
                     MouseArea {
@@ -2013,6 +2022,7 @@ Window {
                         font.family: "等线"
                         font.pixelSize: height * 0.6
                         clip: true
+                        text: config_ctrl.getValue("local_record_save_path")
                     }
 
                     MouseArea {
@@ -2084,7 +2094,13 @@ Window {
                         id: btn_system_setting_save_mouse_area
                         anchors.fill: parent
                         onClicked: {
-
+                            config_ctrl.setValue("server_ip", remote_ip_input_impl.text)
+                            config_ctrl.setValue("server_port", remote_port_input_impl.text)
+                            config_ctrl.setValue("local_record_enable", file_record_enable_checkbox.checked ? "1" : "0")
+                            config_ctrl.setValue("local_record_save_path", file_record_path_input_impl.text)
+                            config_ctrl.setValue("local_record_max_save_time", file_record_time_input_impl.text)
+                            config_ctrl.publish()
+                            mainWindow.info("配置需重启才可生效!")
                         }
                         hoverEnabled: true
                     }

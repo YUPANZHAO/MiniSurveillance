@@ -10,10 +10,11 @@
 #include <QIcon>
 #include "CursorPosProvider.h"
 #include <QQmlContext>
+#include <ConfigCtrl.h>
 
 int main(int argc, char *argv[])
 {
-    // åˆå§‹åŒ–ç½‘ç»œç¯å¢ƒ
+    // ³õÊ¼»¯ÍøÂç»·¾³
     WORD version;
     WSADATA wsaData;
     version = MAKEWORD(1, 1);
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<VideoSender>("VideoSender", 1, 0, "VideoSender");
     qmlRegisterType<MainCtrl>("MainCtrl", 1, 0, "MainCtrl");
     qmlRegisterType<RecordCtrl>("RecordCtrl", 1, 0, "RecordCtrl");
+    qmlRegisterType<ConfigCtrl>("ConfigCtrl", 1, 0, "ConfigCtrl");
 
     app.setWindowIcon(QIcon(":/skins/default/icon.png"));
 
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
 
     int ret = app.exec();
 
-    // æ¸…ç†ç½‘ç»œç¯å¢ƒ
+    // ÇåÀíÍøÂç»·¾³
     WSACleanup();
 
     return ret;
