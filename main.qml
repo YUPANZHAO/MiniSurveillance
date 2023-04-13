@@ -119,11 +119,15 @@ Window {
                     height: width
                     anchors.centerIn: parent
                 }
+
+                property string pre_window_name: ""
+
                 MouseArea {
                     id: btn_system_setting_mouse_area
                     anchors.fill: parent
                     onClicked: {
-
+                        btn_system_setting.pre_window_name = windows_option.current_window_name
+                        windows_option.current_window_name = system_setting_window.window_name;
                     }
                     hoverEnabled: true
                 }
@@ -1712,6 +1716,58 @@ Window {
                 color: "#24000000"
                 Behavior on radius { PropertyAnimation { duration: 100 } }
             }
+
+        }
+
+        // 系统设置窗口
+        Rectangle {
+            id: system_setting_window
+            height: parent.height - title_bar.height
+            anchors.top: title_bar.bottom
+            anchors.left: spacer_1.right
+            anchors.right: parent.right
+            property string window_name: "系统设置窗口"
+            visible: windows_option.current_window_name == window_name
+            color: "#f4f4f6"
+            z: 2
+
+            MouseArea {
+                propagateComposedEvents: parent.logined
+                anchors.fill: parent
+                onClicked: {
+                    forceActiveFocus()
+                    mouse.accepted = false
+                }
+            }
+
+            // 返回按钮
+            Rectangle {
+                id: btn_system_setting_return
+                width: 40
+                height: width
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.leftMargin: 60
+                anchors.topMargin: 40
+                color: btn_system_setting_return_mouse_area.containsMouse ? "#1A000000" : parent.color
+                radius: 8
+                Image {
+                    source: "qrc:/skins/default/return.png"
+                    width: parent.width * 0.6
+                    height: width
+                    anchors.centerIn: parent
+                }
+
+                MouseArea {
+                    id: btn_system_setting_return_mouse_area
+                    anchors.fill: parent
+                    onClicked: {
+                        windows_option.current_window_name = btn_system_setting.pre_window_name
+                    }
+                    hoverEnabled: true
+                }
+            }
+
 
         }
 
