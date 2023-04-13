@@ -10,6 +10,7 @@ import VideoSender 1.0
 import MainCtrl 1.0
 import RecordCtrl 1.0
 import QtGraphicalEffects 1.0
+import QtQuick.Dialogs 1.3
 
 Window {
     id: root
@@ -1768,7 +1769,327 @@ Window {
                 }
             }
 
+            // 设置组
+            Rectangle {
+                width: 300
+                height: 300
+                anchors.top: parent.top
+                anchors.topMargin: 50
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: parent.color
 
+
+                // 服务器IP
+                Text {
+                    id: remote_ip_label
+                    width: parent.width
+                    height: 30
+                    text: "服务器IP"
+                    font.family: "等线"
+                    font.pixelSize: 20
+                    color: "#4F000000"
+                }
+                Rectangle {
+                    id: remote_ip_input
+                    width: 200
+                    height: 45
+                    radius: 10
+                    border.color: "#1F000000"
+                    border.width: 2
+                    anchors.top: remote_ip_label.bottom
+
+                    Text {
+                        text: "服务器IP"
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        color: "#4F000000"
+                        visible: remote_ip_input_impl.length == 0 ? true : false
+                    }
+
+                    TextInput {
+                        id: remote_ip_input_impl
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        clip: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            remote_ip_input_impl.forceActiveFocus()
+                        }
+                    }
+                }
+
+                // 服务器端口
+                Text {
+                    id: remote_port_label
+                    width: parent.width
+                    height: 30
+                    text: "服务器端口"
+                    font.family: "等线"
+                    font.pixelSize: 20
+                    color: "#4F000000"
+                    anchors.top: remote_ip_input.bottom
+                    anchors.topMargin: 10
+                }
+                Rectangle {
+                    id: remote_port_input
+                    width: 150
+                    height: 45
+                    radius: 10
+                    border.color: "#1F000000"
+                    border.width: 2
+                    anchors.top: remote_port_label.bottom
+
+                    Text {
+                        text: "服务器端口"
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        color: "#4F000000"
+                        visible: remote_port_input_impl.length == 0 ? true : false
+                    }
+
+                    TextInput {
+                        id: remote_port_input_impl
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        clip: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            remote_port_input_impl.forceActiveFocus()
+                        }
+                    }
+                }
+
+                // 是否开启本地录像存储
+                Text {
+                    id: file_record_enable_label
+                    width: parent.width
+                    height: 30
+                    text: "是否开启本地录像"
+                    font.family: "等线"
+                    font.pixelSize: 20
+                    color: "#4F000000"
+                    anchors.top: remote_port_input.bottom
+                    anchors.topMargin: 20
+                }
+                CheckBox {
+                    id: file_record_enable_checkbox
+                    checked: true
+                    width: 20
+                    height: 20
+                    anchors.top: file_record_enable_label.bottom
+                    anchors.left: parent.left
+                    anchors.leftMargin: 5
+                }
+
+                // 录像最长存储时间
+                Text {
+                    id: file_record_time_label
+                    width: parent.width
+                    height: 30
+                    text: "录像最长存储时间 (单位：天)"
+                    font.family: "等线"
+                    font.pixelSize: 20
+                    color: "#4F000000"
+                    anchors.top: file_record_enable_checkbox.bottom
+                    anchors.topMargin: 15
+                }
+                Rectangle {
+                    id: file_record_time_input
+                    width: 150
+                    height: 45
+                    radius: 10
+                    border.color: "#1F000000"
+                    border.width: 2
+                    anchors.top: file_record_time_label.bottom
+
+                    Text {
+                        text: "录像最长存储时间"
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        color: "#4F000000"
+                        visible: file_record_time_input_impl.length == 0 ? true : false
+                    }
+
+                    TextInput {
+                        id: file_record_time_input_impl
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        clip: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            file_record_time_input_impl.forceActiveFocus()
+                        }
+                    }
+                }
+
+                // 本地录像存储路径
+                Text {
+                    id: file_record_path_label
+                    width: parent.width
+                    height: 30
+                    text: "本地录像保存路径"
+                    font.family: "等线"
+                    font.pixelSize: 20
+                    color: "#4F000000"
+                    anchors.top: file_record_time_input.bottom
+                    anchors.topMargin: 10
+                }
+                Rectangle {
+                    id: file_record_path_input
+                    width: 250
+                    height: 45
+                    radius: 10
+                    border.color: "#1F000000"
+                    border.width: 2
+                    anchors.top: file_record_path_label.bottom
+
+                    Text {
+                        text: "本地录像保存路径"
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        color: "#4F000000"
+                        visible: file_record_path_input_impl.length == 0 ? true : false
+                    }
+
+                    TextInput {
+                        id: file_record_path_input_impl
+                        width: parent.width - 30
+                        height: parent.height - 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 15
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        font.family: "等线"
+                        font.pixelSize: height * 0.6
+                        clip: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            file_record_path_input_impl.forceActiveFocus()
+                        }
+                    }
+                }
+                Rectangle {
+                    id: btn_file_record_path
+                    width: 45
+                    height: width
+                    anchors.left: file_record_path_input.right
+                    anchors.leftMargin: 5
+                    anchors.top: file_record_path_input.top
+                    color: btn_file_record_path_mouse_area.containsMouse ? "#1A000000" : parent.color
+                    radius: 8
+                    Image {
+                        source: "qrc:/skins/default/folder.png"
+                        width: parent.width * 0.6
+                        height: width
+                        anchors.centerIn: parent
+                    }
+
+                    FileDialog {
+                        id: file_record_choose_dialog
+                        selectFolder: true
+                        selectMultiple: false
+                        nameFilters: [ "All files (*)" ]
+                        onAccepted: {
+                            if(folder != "") {
+                                file_record_path_input_impl.text = folder
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: btn_file_record_path_mouse_area
+                        anchors.fill: parent
+                        onClicked: {
+                            file_record_choose_dialog.open()
+                        }
+                        hoverEnabled: true
+                    }
+                }
+
+                // 保存按钮
+                Rectangle {
+                    id: btn_system_setting_save
+                    width: 70
+                    height: 35
+                    anchors.top: file_record_path_input.bottom
+                    anchors.topMargin: 20
+                    color: btn_system_setting_save_mouse_area.containsMouse ? "#1A000000" : parent.color
+                    radius: 8
+                    border.width: 2
+                    border.color: "#4F000000"
+
+                    Text {
+                        text: qsTr("保 存")
+                        font.family: "等线"
+                        font.pixelSize: 18
+                        color: "#4F000000"
+                        anchors.centerIn: parent
+                    }
+
+                    MouseArea {
+                        id: btn_system_setting_save_mouse_area
+                        anchors.fill: parent
+                        onClicked: {
+
+                        }
+                        hoverEnabled: true
+                    }
+                }
+            }
         }
 
         // 主控控件
