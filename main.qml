@@ -104,6 +104,31 @@ Window {
                 anchors.leftMargin: 10
             }
 
+            // 系统设置
+            Rectangle {
+                id: btn_system_setting
+                width: parent.height * 0.8
+                height: width
+                anchors.right: btn_system_min.left
+                anchors.verticalCenter: parent.verticalCenter
+                color: btn_system_setting_mouse_area.containsMouse ? "#1A000000" : parent.color
+                radius: 8
+                Image {
+                    source: "qrc:/skins/default/setting.png"
+                    width: parent.width * 0.6
+                    height: width
+                    anchors.centerIn: parent
+                }
+                MouseArea {
+                    id: btn_system_setting_mouse_area
+                    anchors.fill: parent
+                    onClicked: {
+
+                    }
+                    hoverEnabled: true
+                }
+            }
+
             // 最小化
             Rectangle {
                 id: btn_system_min

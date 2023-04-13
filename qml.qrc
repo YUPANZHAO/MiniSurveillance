@@ -23,5 +23,6 @@
         <file>skins/default/login.png</file>
         <file>skins/default/register.png</file>
         <file>skins/default/conner_dep.png</file>
+        <file>skins/default/setting.png</file>
     </qresource>
 </RCC>
