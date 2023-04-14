@@ -1,7 +1,7 @@
 #include "IPCClient.h"
 
-IPCClient::IPCClient() {
-    auto channel = grpc::CreateChannel("localhost:9000", grpc::InsecureChannelCredentials());
+IPCClient::IPCClient(const std::string ip, const std::string port) {
+    auto channel = grpc::CreateChannel(ip+":"+port, grpc::InsecureChannelCredentials());
     _stub = make_unique<IPCSrv::Stub>(channel);
 }
 

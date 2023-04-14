@@ -12,46 +12,54 @@
 using namespace ZYP;
 using namespace std;
 
-// è®¾å¤‡ä¿¡æ¯
+// Éè±¸ĞÅÏ¢
 struct DeviceInfo {
-    // è®¾å¤‡åç§°
+    // Éè±¸Ãû³Æ
     string name;
-    // è®¾å¤‡æ³¨å†Œç 
+    // Éè±¸×¢²áÂë
     string key;
-    // RTMPæµåœ°å€
+    // RTMPÁ÷µØÖ·
     string rtmp_url;
-    // è§£å¯†å¯†é’¥
+    // ½âÃÜÃÜÔ¿
     string encryption;
-    // æ˜¯å¦åœ¨çº¿
+    // ÊÇ·ñÔÚÏß
     bool is_active;
-    // æ˜¯å¦æ­£åœ¨æ’­æ”¾
+    // ÊÇ·ñÕıÔÚ²¥·Å
     bool is_playing;
-    // æ˜¯å¦æ­£åœ¨æ’­æ”¾éŸ³é¢‘
+    // ÊÇ·ñÕıÔÚ²¥·ÅÒôÆµ
     bool is_playing_audio;
-    // æ’­æ”¾å ç”¨çª—å£ç´¢å¼•å€¼
+    // ²¥·ÅÕ¼ÓÃ´°¿ÚË÷ÒıÖµ
     int window_idx;
 };
 
-// æ’­æ”¾çª—å£ä¿¡æ¯
+// ²¥·Å´°¿ÚĞÅÏ¢
 struct WindowInfo {
-    // æ˜¯å¦æ­£åœ¨æ’­æ”¾
+    // ÊÇ·ñÕıÔÚ²¥·Å
     bool is_playing;
-    // æ’­æ”¾è®¾å¤‡ç´¢å¼•å€¼
+    // ²¥·ÅÉè±¸Ë÷ÒıÖµ
     int device_idx;
-    // æ’­æ”¾å™¨æ§åˆ¶å¥æŸ„
+    // ²¥·ÅÆ÷¿ØÖÆ¾ä±ú
     VideoCtrl* video_ctrl;
 };
 
 class MainCtrl : public QObject {
 
     Q_OBJECT
+    Q_PROPERTY(QString serverIp READ serverIp WRITE setServerIp)
+    Q_PROPERTY(QString serverPort READ serverPort WRITE setServerPort)
 
 public:
     MainCtrl();
     ~MainCtrl();
 
+    QString serverIp() const;
+    void setServerIp(const QString & ip);
+
+    QString serverPort() const;
+    void setServerPort(const QString & port);
+
 public:
-    // è·å–è®¾å¤‡ä¿¡æ¯
+    // »ñÈ¡Éè±¸ĞÅÏ¢
     Q_INVOKABLE QString getDeviceName(int idx);
     Q_INVOKABLE bool getDeviceIsPlaying(int idx);
     Q_INVOKABLE bool getWindowIsPlayingAudio(int idx);
@@ -59,63 +67,67 @@ public:
     Q_INVOKABLE bool getDeviceIsActive(int idx);
     Q_INVOKABLE QString getAllDeviceKey();
 
-    // é€šè¿‡è®¾å¤‡æ³¨å†Œç æ·»åŠ è®¾å¤‡ï¼Œè¿”å›è®¾å¤‡ç´¢å¼•å€¼
+    // Í¨¹ıÉè±¸×¢²áÂëÌí¼ÓÉè±¸£¬·µ»ØÉè±¸Ë÷ÒıÖµ
     Q_INVOKABLE int addDevice(const QString & key);
-    // æ·»åŠ æ’­æ”¾çª—å£ï¼Œè¿”å›çª—å£ç´¢å¼•å€¼
+    // Ìí¼Ó²¥·Å´°¿Ú£¬·µ»Ø´°¿ÚË÷ÒıÖµ
     Q_INVOKABLE int addWindow(VideoCtrl* videoCtrl);
 
-    // æ’­æ”¾è§†é¢‘ï¼Œè¿”å›å¯¹åº”çš„çª—å£ç´¢å¼•å€¼ï¼Œ-1ä»£è¡¨å¤±è´¥
+    // ²¥·ÅÊÓÆµ£¬·µ»Ø¶ÔÓ¦µÄ´°¿ÚË÷ÒıÖµ£¬-1´ú±íÊ§°Ü
     Q_INVOKABLE int playVideo(int device_idx);
-    // æ’­æ”¾éŸ³é¢‘ï¼Œå‚æ•°ä¸º playVideo çš„è¿”å›å€¼ï¼Œå³çª—å£çš„ç´¢å¼•å€¼
+    // ²¥·ÅÒôÆµ£¬²ÎÊıÎª playVideo µÄ·µ»ØÖµ£¬¼´´°¿ÚµÄË÷ÒıÖµ
     Q_INVOKABLE void playAudio(int window_idx);
-    // å…³é—­è§†é¢‘ï¼Œå‚æ•°åŒæ’­æ”¾è§†é¢‘ä¸€è‡´
+    // ¹Ø±ÕÊÓÆµ£¬²ÎÊıÍ¬²¥·ÅÊÓÆµÒ»ÖÂ
     Q_INVOKABLE void stopVideo(int device_idx);
-    // å…³é—­éŸ³é¢‘ï¼Œå‚æ•°åŒæ’­æ”¾éŸ³é¢‘ä¸€è‡´
+    // ¹Ø±ÕÒôÆµ£¬²ÎÊıÍ¬²¥·ÅÒôÆµÒ»ÖÂ
     Q_INVOKABLE void stopAudio(int window_idx);
 
-    // å¼€å¯å¯¹è®²
+    // ¿ªÆô¶Ô½²
     Q_INVOKABLE bool startTalk(int window_idx);
-    // å…³é—­å¯¹è®²
+    // ¹Ø±Õ¶Ô½²
     Q_INVOKABLE void stopTalk(int window_idx);
-    // è·å–å¯¹è®²çš„rtmpåœ°å€
+    // »ñÈ¡¶Ô½²µÄrtmpµØÖ·
     Q_INVOKABLE QString getTalkRtmpUrl();
 
-    // è·å–å½•åƒæ–‡ä»¶
+    // »ñÈ¡Â¼ÏñÎÄ¼ş
     Q_INVOKABLE QString getRecordFile(int device_idx, QString begin_time, QString end_time);
-    // è·å–è®¾å¤‡çš„è§£å¯†å¯†é’¥
+    // »ñÈ¡Éè±¸µÄ½âÃÜÃÜÔ¿
     Q_INVOKABLE QString getEncryption(int device_idx);
 
-    // æ³¨å†Œ
+    // ×¢²á
     Q_INVOKABLE QString register_user(const QString & username, const QString & password);
-    // ç™»å½•
+    // µÇÂ¼
     Q_INVOKABLE QString login_user(const QString & username, const QString & password);
 
 private:
-    // æŸ¥æ‰¾å¯ç”¨çª—å£ï¼Œè‹¥æ— å¯ä»¥çª—å£ï¼Œé»˜è®¤æ›¿æ¢ç¬¬ä¸€ä¸ª
+    // ²éÕÒ¿ÉÓÃ´°¿Ú£¬ÈôÎŞ¿ÉÒÔ´°¿Ú£¬Ä¬ÈÏÌæ»»µÚÒ»¸ö
     int findWindow();
 
-    // å¼€å¯æ¶ˆæ¯å›è°ƒ
+    // ¿ªÆôÏûÏ¢»Øµ÷
     void startMessageCallBack();
-    // æ¶ˆæ¯å›è°ƒå¤„ç†å‡½æ•°
+    // ÏûÏ¢»Øµ÷´¦Àíº¯Êı
     void MessageHandle(const string & msg);
 
 private:
-    // å­˜å‚¨è®¾å¤‡ä¿¡æ¯
+    // ´æ´¢Éè±¸ĞÅÏ¢
     vector<DeviceInfo> devices;
-    // å­˜å‚¨æ’­æ”¾å™¨ä¿¡æ¯åŠæ§åˆ¶å¥æŸ„
+    // ´æ´¢²¥·ÅÆ÷ĞÅÏ¢¼°¿ØÖÆ¾ä±ú
     vector<WindowInfo> windows;
-    // RPCè¯·æ±‚ç±»
+    // RPCÇëÇóÀà
     unique_ptr<IPCClient> rpc;
-    // æ˜¯å¦æ­£åœ¨å¯¹è®²
+    // ÊÇ·ñÕıÔÚ¶Ô½²
     bool is_talking;
-    // å¯¹è®²çš„rtmpåœ°å€
+    // ¶Ô½²µÄrtmpµØÖ·
     string talk_rtmp_push_url;
-    // æ¶ˆæ¯å›è°ƒçº¿ç¨‹
+    // ÏûÏ¢»Øµ÷Ïß³Ì
     unique_ptr<std::thread> msg_cb_thread;
-    // ç”¨æˆ·Token
+    // ÓÃ»§Token
     string token;
-    // ç”¨æˆ·åˆå§‹åŒ–è®¾å¤‡åˆ—è¡¨JSONæ•°æ®
+    // ÓÃ»§³õÊ¼»¯Éè±¸ÁĞ±íJSONÊı¾İ
     string init_device_list;
+    // ·şÎñÆ÷IP
+    string server_ip;
+    // ·şÎñÆ÷¶Ë¿Ú
+    string server_port;
 };
 
 #endif // MAINCTRL_H

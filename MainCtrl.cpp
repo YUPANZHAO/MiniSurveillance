@@ -3,7 +3,6 @@
 MainCtrl::MainCtrl()
 : is_talking(false)
 , msg_cb_thread(nullptr) {
-    rpc = make_unique<IPCClient>();
 }
 
 MainCtrl::~MainCtrl() {
@@ -12,6 +11,30 @@ MainCtrl::~MainCtrl() {
         { "token", token }
     });
     msg_cb_thread->join();
+}
+
+QString MainCtrl::serverIp() const {
+    return server_ip.c_str();
+}
+
+void MainCtrl::setServerIp(const QString & ip) {
+    server_ip = ip.toStdString();
+    if(!server_ip.empty() && !server_port.empty()) {
+        debug("server_init", server_ip, server_port);
+        rpc = make_unique<IPCClient>(server_ip, server_port);
+    }
+}
+
+QString MainCtrl::serverPort() const {
+    return server_port.c_str();
+}
+
+void MainCtrl::setServerPort(const QString & port) {
+    server_port = port.toStdString();
+    if(!server_ip.empty() && !server_port.empty()) {
+        debug("server_init", server_ip, server_port);
+        rpc = make_unique<IPCClient>(server_ip, server_port);
+    }
 }
 
 QString MainCtrl::getDeviceName(int idx) {

@@ -28,7 +28,7 @@ using nlohmann::json;
 class IPCClient {
 
 public:
-    IPCClient();
+    IPCClient(const std::string ip, const std::string port);
     ~IPCClient();
 
 public:

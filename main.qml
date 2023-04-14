@@ -2117,6 +2117,8 @@ Window {
                 videoCtrl3.window_idx = mainctrl.addWindow(videoCtrl3)
                 videoCtrl4.window_idx = mainctrl.addWindow(videoCtrl4)
             }
+            serverIp: config_ctrl.getValue("server_ip")
+            serverPort: config_ctrl.getValue("server_port")
         }
 
         // 录像播放器控件
