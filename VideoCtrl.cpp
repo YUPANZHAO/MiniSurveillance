@@ -1,4 +1,5 @@
 #include "VideoCtrl.h"
+#include <QDateTime>
 
 VideoCtrl::VideoCtrl()
 : videoCapture(make_unique<VideoCapture>())
@@ -6,6 +7,7 @@ VideoCtrl::VideoCtrl()
 , provider(make_unique<FrameProvider>())
 , frame(nullptr)
 , audio_decoder(make_unique<AACDecoder>())
+, ffmpeg_encoder(nullptr)
 , is_playing(false)
 , is_playing_audio(false)
 , audio(nullptr)
@@ -69,11 +71,30 @@ VideoCtrl::VideoCtrl()
     video_decoder->setFrameCallBack([this](BYTE* data, UINT32 len, UINT32 width, UINT32 height, UINT32 fps, AVPixelFormat pix_fmt) {
         if(!frame) {
             frame = make_unique<QVideoFrame>(len, QSize(width, height), width, convertFormat(pix_fmt));
+            // 创建本地录像编码器
+            if(this->is_auto_local_record) {
+                debug("start init ffmpeg encoder");
+                ffmpeg_encoder = make_unique<FFmpeg_Encoder>(width, height, fps, pix_fmt);
+                debug("end init ffmpeg encoder");
+                ffmpeg_encoder->setDataCallBack([this](BYTE* data, UINT32 len) {
+                    QDateTime dateTime = QDateTime::currentDateTime();
+                    string date_time = dateTime.toString("yyyy-MM-dd").toStdString();
+                    string save_path = this->local_record_dir + "/" + this->device_key_name + "-" + date_time + ".264";
+                    FILE * fd = fopen(save_path.c_str(), "ab");
+                    if(!fd) return;
+                    fwrite(data, 1, len, fd);
+                    fclose(fd);
+                });
+            }
         }
         if(frame->map(QAbstractVideoBuffer::WriteOnly)) {
             memcpy(frame->bits(), data, len);
             frame->unmap();
             emit this->sendOneFrame(*frame.get());
+        }
+        // 自动进行本地录像
+        if(this->is_auto_local_record) {
+            ffmpeg_encoder->receiveData(data, len, width, height, pix_fmt);
         }
     });
     // AAC 解码，获取 PCM 数据
@@ -93,6 +114,8 @@ bool VideoCtrl::play(const QString url, const QString encryption) {
     is_playing_audio = false;
     // 设置流地址
     videoCapture->setRtmpURL(url.toStdString());
+    // 保存设备key
+    this->device_key_name = url.toStdString().substr(url.length() - 6, 6);
     // 设置解密密钥
     this->encryption = encryption.toStdString();
     // 开始拉流
@@ -113,6 +136,7 @@ void VideoCtrl::stop() {
         audio_io = nullptr;
     }
     frame = nullptr;
+    ffmpeg_encoder = nullptr;
     is_playing = false;
     is_playing_audio = false;
     provider->flush();
@@ -132,6 +156,22 @@ FrameProvider* VideoCtrl::frameProvider() {
 
 void VideoCtrl::setFrameProvider(FrameProvider* provider) {
 
+}
+
+QString VideoCtrl::autoLocalRecord() const {
+    return is_auto_local_record ? "1" : "0";
+}
+
+void VideoCtrl::setAutoLocalRecord(const QString & value) {
+    is_auto_local_record = value == "1" ? true : false;
+}
+
+QString VideoCtrl::localRecordDir() const {
+    return local_record_dir.c_str();
+}
+
+void VideoCtrl::setlocalRecordDir(const QString & value) {
+    local_record_dir = value.toStdString().substr(8, value.length() - 8);
 }
 
 auto VideoCtrl::convertFormat(AVPixelFormat pix_fmt) -> QVideoFrame::PixelFormat {

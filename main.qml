@@ -591,6 +591,8 @@ Window {
                 VideoCtrl {
                     id: videoCtrl1
                     property int window_idx: -1
+                    autoLocalRecord: config_ctrl.getValue("local_record_enable")
+                    localRecordDir: config_ctrl.getValue("local_record_save_path")
                 }
 
                 MouseArea {
@@ -631,6 +633,8 @@ Window {
                 VideoCtrl {
                     id: videoCtrl2
                     property int window_idx: -1
+                    autoLocalRecord: config_ctrl.getValue("local_record_enable")
+                    localRecordDir: config_ctrl.getValue("local_record_save_path")
                 }
 
                 MouseArea {
@@ -670,6 +674,8 @@ Window {
                 VideoCtrl {
                     id: videoCtrl3
                     property int window_idx: -1
+                    autoLocalRecord: config_ctrl.getValue("local_record_enable")
+                    localRecordDir: config_ctrl.getValue("local_record_save_path")
                 }
 
                 MouseArea {
@@ -709,6 +715,8 @@ Window {
                 VideoCtrl {
                     id: videoCtrl4
                     property int window_idx: -1
+                    autoLocalRecord: config_ctrl.getValue("local_record_enable")
+                    localRecordDir: config_ctrl.getValue("local_record_save_path")
                 }
 
                 MouseArea {

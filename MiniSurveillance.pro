@@ -15,6 +15,7 @@ SOURCES += \
         ConfigCtrl.cpp \
         CursorPosProvider.cpp \
         FFmpeg_Decoder.cpp \
+        FFmpeg_Encode.cpp \
         FlvPlayer.cpp \
         FrameProvider.cpp \
         H264Decoder.cpp \
@@ -114,6 +115,7 @@ HEADERS += \
     include/Crypto.hpp \
     include/CursorPosProvider.h \
     include/FFmpeg_Decoder.h \
+    include/FFmpeg_Encode.h \
     include/FlvPlayer.h \
     include/FrameProvider.h \
     include/H264Decoder.h \
